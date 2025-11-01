@@ -1,0 +1,12 @@
+.env
+/vendor/
+/node_modules/
+/src/storage/
+/src/bootstrap/cache/
+/src/.idea/
+/npm-debug.log
+.DS_Store
+/docker-main/mysql/mysql_data/
+/.vscode/
+/.phpunit.result.cache
+/.sass-cache/
