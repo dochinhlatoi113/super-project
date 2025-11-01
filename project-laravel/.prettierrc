@@ -1,0 +1,9 @@
+{
+    "tabWidth": 4,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "printWidth": 120,
+    "phpVersion": "8.2",
+    "bracketSpacing": true,
+    "semi": true
+}

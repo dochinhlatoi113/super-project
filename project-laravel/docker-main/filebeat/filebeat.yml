@@ -1,0 +1,57 @@
+filebeat.inputs:
+    - type: log
+      enabled: true
+      # Use a glob to capture both 'Storage' and 'storage' directories and avoid case-sensitive misses
+      paths:
+          - /var/www/html/app/Domain/*/logs/elasticsearch.log
+          - /var/www/html/app/Domain/**/logs/elasticsearch.log
+      fields:
+          source_app: elasticsearch
+      fields_under_root: true
+      tags: ['elasticsearch', 'debug']
+
+
+    - type: log
+      enabled: true
+      # Use a glob to capture both 'Storage' and 'storage' directories and avoid case-sensitive misses
+      paths:
+          - /var/www/html/app/Domain/*/logs/redis.log
+          - /var/www/html/app/Domain/**/logs/redis.log
+      fields:
+          source_app: redis
+      fields_under_root: true
+      tags: ['redis', 'debug']
+
+    - type: log
+      enabled: true
+      # Use a glob to capture both 'Storage' and 'storage' directories and avoid case-sensitive misses
+      paths:
+             - /var/www/html/app/Domain/*/Storage/logs/product.log
+             - /var/www/html/app/Domain/**/Storage/logs/product.log
+      fields:
+          source_app: product
+      fields_under_root: true
+      tags: ['laravel', 'debug']
+
+    - type: log
+      enabled: true
+      # Use a glob to capture both 'Storage' and 'storage' directories and avoid case-sensitive misses
+      paths:
+          - /var/www/html/app/Domain/*/logs/kafka.log
+          - /var/www/html/app/Domain/**/logs/kafka.log
+      fields:
+          source_app: kafka
+      fields_under_root: true
+      tags: ['kafka', 'debug']
+
+output.logstash:
+    hosts: ['logstash:5044']
+
+logging.level: info
+logging.to_files: false
+logging.to_syslog: false
+
+processors:
+    - add_host_metadata: ~
+    - add_cloud_metadata: ~
+    - add_docker_metadata: ~

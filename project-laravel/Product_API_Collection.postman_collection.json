@@ -1,0 +1,619 @@
+{
+    "info": {
+        "name": "Product Management API (Many-to-Many Categories)",
+        "description": "API collection for creating and managing products with many-to-many categories relationship, variants, SKUs and barcodes with config mapping",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Create Product with Variants, SKUs & Barcodes",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "multipart/form-data"
+                    }
+                ],
+                "body": {
+                    "mode": "formdata",
+                    "formdata": [
+                        {
+                            "key": "product[name]",
+                            "value": "Laptop HP Super Config Mapping",
+                            "description": "Product name",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product[slug]",
+                            "value": "laptop-hp-xps-config-mapping-new",
+                            "description": "Product slug (URL friendly)",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product[brand_id]",
+                            "value": "2",
+                            "description": "Brand ID",
+                            "type": "text"
+                        },
+                        {
+                            "key": "categories[0][id]",
+                            "value": "2",
+                            "description": "Primary category ID",
+                            "type": "text"
+                        },
+                        {
+                            "key": "categories[0][is_primary]",
+                            "value": "1",
+                            "description": "Is this the primary category (1=yes, 0=no)",
+                            "type": "text"
+                        },
+                        {
+                            "key": "categories[0][is_active]",
+                            "value": "1",
+                            "description": "Category active status (1=active, 0=inactive)",
+                            "type": "text"
+                        },
+                        {
+                            "key": "categories[1][id]",
+                            "value": "3",
+                            "description": "Secondary category ID (optional)",
+                            "type": "text"
+                        },
+                        {
+                            "key": "categories[1][is_primary]",
+                            "value": "0",
+                            "description": "Is this the primary category (1=yes, 0=no)",
+                            "type": "text"
+                        },
+                        {
+                            "key": "categories[1][is_active]",
+                            "value": "1",
+                            "description": "Category active status (1=active, 0=inactive)",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product[is_active]",
+                            "value": "1",
+                            "description": "Product active status (1=active, 0=inactive)",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[name]",
+                            "value": "Laptop HP XPS 13 Config Mapping Variant",
+                            "description": "Variant name",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[slug]",
+                            "value": "laptop-hp-xps-config-mapping-variant-new",
+                            "description": "Variant slug",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[stock]",
+                            "value": "100",
+                            "description": "Total variant stock",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[description]",
+                            "value": "lorem test tetettetete",
+                            "description": "Variant description",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[config][0][color]",
+                            "value": "red",
+                            "description": "First config color",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[config][0][size]",
+                            "value": "14 inch",
+                            "description": "First config size",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[config][0][stock]",
+                            "value": "10",
+                            "description": "First config stock",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[config][0][product_variant_albums][0][file]",
+                            "value": "",
+                            "description": "url file 0 config",
+                            "type": "file"
+                        },
+                        {
+                            "key": "product_variant[config][0][product_variant_albums][1][file]",
+                            "value": "",
+                            "description": "url file 1 config",
+                            "type": "file"
+                        },
+                        {
+                            "key": "product_variant[config][0][price]",
+                            "value": "2",
+                            "description": "First config price",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[config][0][is_active]",
+                            "value": "1",
+                            "description": "First config active status",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[config][1][color]",
+                            "value": "yellow",
+                            "description": "Second config color",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[config][1][size]",
+                            "value": "15 inch",
+                            "description": "Second config size",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[config][1][stock]",
+                            "value": "90",
+                            "description": "Second config stock",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[config][1][price]",
+                            "value": "5",
+                            "description": "Second config price",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[config][1][is_active]",
+                            "value": "1",
+                            "description": "Second config active status",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[sku][0][sku]",
+                            "value": "HP-XPS-14-RED-NEW-001",
+                            "description": "SKU for first config (red, 14 inch)",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[sku][0][type]",
+                            "value": "sku",
+                            "description": "SKU type for first config",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[sku][0][is_primary]",
+                            "value": "1",
+                            "description": "Primary SKU for first config",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[sku][0][product_variant_config_index]",
+                            "value": "0",
+                            "description": "Config index this SKU belongs to (0 = first config)",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[sku][1][sku]",
+                            "value": "HP-XPS-15-YELLOW-NEW-002",
+                            "description": "SKU for second config (yellow, 15 inch)",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[sku][1][type]",
+                            "value": "sku",
+                            "description": "SKU type for second config",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[sku][1][is_primary]",
+                            "value": "0",
+                            "description": "Secondary SKU for second config",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[sku][1][product_variant_config_index]",
+                            "value": "1",
+                            "description": "Config index this SKU belongs to (1 = second config)",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[barcode][0][barcode]",
+                            "value": "123456789018",
+                            "description": "Barcode for first config",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[barcode][0][type]",
+                            "value": "ean",
+                            "description": "Barcode type for first config",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[barcode][0][is_primary]",
+                            "value": "0",
+                            "description": "Barcode primary status for first config",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[barcode][0][product_variant_config_index]",
+                            "value": "0",
+                            "description": "Config index this barcode belongs to (0 = first config)",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[barcode][1][barcode]",
+                            "value": "123456789019",
+                            "description": "Barcode for second config",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[barcode][1][type]",
+                            "value": "ean",
+                            "description": "Barcode type for second config",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[barcode][1][is_primary]",
+                            "value": "0",
+                            "description": "Barcode primary status for second config",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[barcode][1][product_variant_config_index]",
+                            "value": "1",
+                            "description": "Config index this barcode belongs to (1 = second config)",
+                            "type": "text"
+                        }
+                    ]
+                },
+                "url": {
+                    "raw": "http://localhost/api/v1/products",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "path": ["api", "v1", "products"]
+                },
+                "description": "Create a complete product with multiple categories (many-to-many), variant, 2 configs, 2 SKUs and 2 barcodes (with config mapping)"
+            },
+            "response": []
+        },
+        {
+            "name": "Get Product List",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost/api/v1/products?page=1&per_page=10",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "path": ["api", "v1", "products"],
+                    "query": [
+                        {
+                            "key": "page",
+                            "value": "1"
+                        },
+                        {
+                            "key": "per_page",
+                            "value": "10"
+                        }
+                    ]
+                },
+                "description": "Get paginated list of products"
+            },
+            "response": []
+        },
+        {
+            "name": "Get Product Detail",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost/api/v1/products/detail/{{product_slug}}",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "path": ["api", "v1", "products", "detail", "{{product_slug}}"]
+                },
+                "description": "Get detailed product information by slug"
+            },
+            "response": []
+        },
+        {
+            "name": "Clear Product Cache",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost/api/v1/products/clear-cache",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "path": ["api", "v1", "products", "clear-cache"]
+                },
+                "description": "Clear product cache to see latest changes"
+            },
+            "response": []
+        },
+        {
+            "name": "Update Product Categories",
+            "request": {
+                "method": "PUT",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/x-www-form-urlencoded"
+                    }
+                ],
+                "body": {
+                    "mode": "urlencoded",
+                    "urlencoded": [
+                        {
+                            "key": "product[name]",
+                            "value": "Updated Laptop HP Super Config Mapping",
+                            "description": "Updated product name",
+                            "type": "text"
+                        },
+                        {
+                            "key": "categories[0][id]",
+                            "value": "1",
+                            "description": "Updated primary category ID",
+                            "type": "text"
+                        },
+                        {
+                            "key": "categories[0][is_primary]",
+                            "value": "1",
+                            "description": "Primary category",
+                            "type": "text"
+                        },
+                        {
+                            "key": "categories[0][is_active]",
+                            "value": "1",
+                            "description": "Active category",
+                            "type": "text"
+                        },
+                        {
+                            "key": "categories[1][id]",
+                            "value": "2",
+                            "description": "Additional category ID",
+                            "type": "text"
+                        },
+                        {
+                            "key": "categories[1][is_primary]",
+                            "value": "0",
+                            "description": "Not primary",
+                            "type": "text"
+                        },
+                        {
+                            "key": "categories[1][is_active]",
+                            "value": "1",
+                            "description": "Active category",
+                            "type": "text"
+                        }
+                    ]
+                },
+                "url": {
+                    "raw": "http://localhost/api/v1/products/{{product_slug}}",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "path": ["api", "v1", "products", "{{product_slug}}"]
+                },
+                "description": "Update product with new categories (many-to-many relationship)"
+            },
+            "response": []
+        },
+        {
+            "name": "Create Supplier",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"name\": \"Tech Supplier Inc.\",\n    \"contact_name\": \"John Doe\",\n    \"email\": \"john@techsupplier.com\",\n    \"phone\": \"+1234567890\",\n    \"address\": \"123 Tech Street, Tech City\",\n    \"country\": \"USA\",\n    \"is_active\": 1,\n    \"is_primary\": 0\n}"
+                },
+                "url": {
+                    "raw": "http://localhost/api/v1/suppliers",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "path": ["api", "v1", "suppliers"]
+                },
+                "description": "Create a new supplier"
+            },
+            "response": []
+        },
+        {
+            "name": "Create Warehouse",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"name\": \"Main Warehouse\",\n    \"address\": \"456 Warehouse Ave, Storage City\",\n    \"region\": \"North\",\n    \"contact_phone\": \"+0987654321\",\n    \"is_active\": 1,\n    \"is_primary\": 1\n}"
+                },
+                "url": {
+                    "raw": "http://localhost/api/v1/warehouses",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "path": ["api", "v1", "warehouses"]
+                },
+                "description": "Create a new warehouse"
+            },
+            "response": []
+        },
+        {
+            "name": "Create Attribute",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"name\": \"Color\",\n    \"code\": \"color\",\n    \"type\": \"select\",\n    \"is_active\": 1,\n    \"is_primary\": 0\n}"
+                },
+                "url": {
+                    "raw": "http://localhost/api/v1/attributes",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "path": ["api", "v1", "attributes"]
+                },
+                "description": "Create a new product attribute"
+            },
+            "response": []
+        },
+        {
+            "name": "Create Attribute Value",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"attribute_id\": 1,\n    \"value\": \"Red\",\n    \"display_name\": \"Red Color\",\n    \"sort_order\": 1,\n    \"is_active\": 1,\n    \"is_primary\": 0\n}"
+                },
+                "url": {
+                    "raw": "http://localhost/api/v1/attribute-values",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "path": ["api", "v1", "attribute-values"]
+                },
+                "description": "Create a new attribute value"
+            },
+            "response": []
+        },
+        {
+            "name": "Create Product Tag",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"name\": \"New Arrival\",\n    \"slug\": \"new-arrival\",\n    \"is_active\": 1,\n    \"is_primary\": 0\n}"
+                },
+                "url": {
+                    "raw": "http://localhost/api/v1/product-tags",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "path": ["api", "v1", "product-tags"]
+                },
+                "description": "Create a new product tag"
+            },
+            "response": []
+        },
+        {
+            "name": "Create Discount",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"name\": \"Black Friday Sale\",\n    \"type\": \"percent\",\n    \"value\": 20,\n    \"start_date\": \"2025-11-01\",\n    \"end_date\": \"2025-11-30\",\n    \"is_active\": 1,\n    \"is_primary\": 0\n}"
+                },
+                "url": {
+                    "raw": "http://localhost/api/v1/discounts",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "path": ["api", "v1", "discounts"]
+                },
+                "description": "Create a new discount"
+            },
+            "response": []
+        },
+        {
+            "name": "Create Product Review",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"product_id\": 1,\n    \"user_id\": 1,\n    \"rating\": 5,\n    \"comment\": \"Great product!\",\n    \"status\": \"approved\",\n    \"is_active\": 1,\n    \"is_primary\": 0\n}"
+                },
+                "url": {
+                    "raw": "http://localhost/api/v1/product-reviews",
+                    "protocol": "http",
+                    "host": ["localhost"],
+                    "path": ["api", "v1", "product-reviews"]
+                },
+                "description": "Create a new product review"
+            },
+            "response": []
+        }
+    ],
+    "variable": [
+        {
+            "key": "product_slug",
+            "value": "laptop-hp-xps-config-mapping-new",
+            "type": "string"
+        }
+    ]
+}
