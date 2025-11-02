@@ -44,12 +44,21 @@ jobs:
   laravel:
     name: Laravel
     runs-on: ubuntu-latest
-    if: hashFiles('project-laravel/composer.json') != ''
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check if Laravel project exists
+        id: check-laravel
+        run: |
+          if [ -f "project-laravel/composer.json" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Setup PHP
+        if: steps.check-laravel.outputs.exists == 'true'
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
@@ -57,6 +66,7 @@ jobs:
           coverage: none
 
       - name: Cache composer
+        if: steps.check-laravel.outputs.exists == 'true'
         uses: actions/cache@v4
         with:
           path: ~/.composer/cache/files
@@ -64,10 +74,12 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install dependencies
+        if: steps.check-laravel.outputs.exists == 'true'
         working-directory: project-laravel
         run: composer install --no-interaction --prefer-dist --no-progress
 
       - name: Prepare env (best-effort)
+        if: steps.check-laravel.outputs.exists == 'true'
         working-directory: project-laravel
         shell: bash
         run: |
@@ -77,6 +89,7 @@ jobs:
           [ -d database ] && touch database/database.sqlite || true
 
       - name: Run tests (if available)
+        if: steps.check-laravel.outputs.exists == 'true'
         working-directory: project-laravel
         shell: bash
         run: |
