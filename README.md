@@ -2,7 +2,7 @@
 
 Đây là một monorepo chứa các dự án microservices được tích hợp với nhau.
 
-## Cấu trúc dự án
+## Cấu trúc thư mục dự án
 
 ```
 super-project/
