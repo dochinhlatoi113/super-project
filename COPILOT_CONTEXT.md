@@ -6,7 +6,7 @@ COPILOT — NGỮ CẢNH DỰ ÁN (Tiếng Việt)
 Tệp này tóm tắt ngữ cảnh quan trọng và quy tắc làm việc cho bất kỳ trợ lý AI nào tương tác với repository này. Mục tiêu: minh bạch, an toàn, dễ rollback.
 
 ## Tóm tắt ngắn dự án (hiện trạng)
-
+ riêng đối với source Laravel
 -   Dự án: ứng dụng Laravel (mã nguồn trong `src/`).
 -   Hạ tầng dev: Docker Compose trong `docker-main/` chứa Elasticsearch, Kibana, Logstash, Kafka, MySQL, PHP, nginx, v.v.
 -   Logstash pipeline chính: `docker-main/logstash/pipeline/logstash.conf` (đang được debug — hiện pipeline đã load thành công sau khi backup được di chuyển ra khỏi thư mục pipeline).
