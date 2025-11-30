@@ -65,6 +65,7 @@ const validateRegister = (req, res, next) => {
 };
 
 const validateLogin = (req, res, next) => {
+
   // Check if req.body exists
   if (!req.body || Object.keys(req.body).length === 0) {
     return res.status(400).json({

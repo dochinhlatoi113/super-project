@@ -1,117 +1,94 @@
 import { useAuth } from '../context/AuthContext';
+import StatsGrid from '../components/StatsGrid';
 
 function DashboardPage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+
+  const stats = [
+    { 
+      label: 'Total Users', 
+      value: '1,234', 
+      trend: { value: '12% from last month', isPositive: true },
+      icon: (
+        <div className="bg-blue-500 w-12 h-12 rounded-lg flex items-center justify-center">
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+        </div>
+      )
+    },
+    { 
+      label: 'Revenue', 
+      value: '$45,678', 
+      trend: { value: '23% from last month', isPositive: true },
+      icon: (
+        <div className="bg-green-500 w-12 h-12 rounded-lg flex items-center justify-center">
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+        </div>
+      )
+    },
+    { 
+      label: 'Orders', 
+      value: '892', 
+      trend: { value: '8% from last month', isPositive: true },
+      icon: (
+        <div className="bg-purple-500 w-12 h-12 rounded-lg flex items-center justify-center">
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+        </div>
+      )
+    },
+    { 
+      label: 'Products', 
+      value: '156', 
+      trend: { value: '5% from last month', isPositive: true },
+      icon: (
+        <div className="bg-orange-500 w-12 h-12 rounded-lg flex items-center justify-center">
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+        </div>
+      )
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">CMS Dashboard</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">
-              Welcome, <strong>{user?.name}</strong>
-            </span>
-            <button
-              onClick={logout}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </header>
+    <div className="space-y-6">
+      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-8 text-white">
+        <h1 className="text-3xl font-bold mb-2">Welcome back, {user?.name}!</h1>
+        <p className="text-indigo-100">Here's what's happening with your business today.</p>
+      </div>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Stats Card 1 */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Users</p>
-                <p className="text-3xl font-bold text-gray-900">1,234</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-              </div>
-            </div>
-          </div>
+      <StatsGrid stats={stats} columns={4} />
 
-          {/* Stats Card 2 */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Admins</p>
-                <p className="text-3xl font-bold text-gray-900">42</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          {/* Stats Card 3 */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Active Sessions</p>
-                <p className="text-3xl font-bold text-gray-900">89</p>
-              </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-            </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Sales Overview</h3>
+          <div className="h-64 flex items-center justify-center text-gray-400">
+            <p>Chart will be here</p>
           </div>
         </div>
 
-        {/* Recent Activity */}
-        <div className="mt-8 bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
-          </div>
-          <div className="p-6">
-            <div className="space-y-4">
-              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-blue-600 font-semibold">SA</span>
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Recent Activity</h3>
+          <div className="space-y-4">
+            {[1, 2, 3, 4].map((item) => (
+              <div key={item} className="flex items-center space-x-4 p-3 hover:bg-gray-50 rounded-lg transition">
+                <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                  <span className="text-indigo-600 font-semibold">U</span>
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">New admin registered</p>
-                  <p className="text-xs text-gray-500">superadmin@example.com - 2 minutes ago</p>
+                  <p className="text-sm font-medium text-gray-800">New user registered</p>
+                  <p className="text-xs text-gray-500">2 minutes ago</p>
                 </div>
               </div>
-              
-              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                  <span className="text-green-600 font-semibold">JD</span>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">User logged in</p>
-                  <p className="text-xs text-gray-500">john.doe@example.com - 15 minutes ago</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                  <span className="text-purple-600 font-semibold">AM</span>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">Settings updated</p>
-                  <p className="text-xs text-gray-500">admin@example.com - 1 hour ago</p>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
