@@ -1,4 +1,21 @@
-luon luon : mongosh
+
+luon luon :
+# Start MongoDB
+brew services start mongodb-community
+
+# Kiểm tra status
+brew services list | grep mongodb
+
+# Hoặc kiểm tra kết nối
+mongosh --eval "db.adminCommand('ping')"
+
+# Stop MongoDB
+brew services stop mongodb-community
+
+# Restart MongoDB
+brew services restart mongodb-community
+# connect
+ mongosh
 
 1: xem tat ca databse
 show dbs
