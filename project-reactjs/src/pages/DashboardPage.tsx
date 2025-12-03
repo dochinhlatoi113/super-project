@@ -1,14 +1,16 @@
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import StatsGrid from '../components/StatsGrid';
 
 function DashboardPage() {
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   const stats = [
     { 
-      label: 'Total Users', 
+      label: t('dashboard.totalUsers'), 
       value: '1,234', 
-      trend: { value: '12% from last month', isPositive: true },
+      trend: { value: `12% ${t('dashboard.fromLastMonth')}`, isPositive: true },
       icon: (
         <div className="bg-blue-500 w-12 h-12 rounded-lg flex items-center justify-center">
           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -18,9 +20,9 @@ function DashboardPage() {
       )
     },
     { 
-      label: 'Revenue', 
+      label: t('dashboard.revenue'), 
       value: '$45,678', 
-      trend: { value: '23% from last month', isPositive: true },
+      trend: { value: `23% ${t('dashboard.fromLastMonth')}`, isPositive: true },
       icon: (
         <div className="bg-green-500 w-12 h-12 rounded-lg flex items-center justify-center">
           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -30,9 +32,9 @@ function DashboardPage() {
       )
     },
     { 
-      label: 'Orders', 
+      label: t('dashboard.orders'), 
       value: '892', 
-      trend: { value: '8% from last month', isPositive: true },
+      trend: { value: `8% ${t('dashboard.fromLastMonth')}`, isPositive: true },
       icon: (
         <div className="bg-purple-500 w-12 h-12 rounded-lg flex items-center justify-center">
           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,9 +44,9 @@ function DashboardPage() {
       )
     },
     { 
-      label: 'Products', 
+      label: t('dashboard.products'), 
       value: '156', 
-      trend: { value: '5% from last month', isPositive: true },
+      trend: { value: `5% ${t('dashboard.fromLastMonth')}`, isPositive: true },
       icon: (
         <div className="bg-orange-500 w-12 h-12 rounded-lg flex items-center justify-center">
           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -58,8 +60,8 @@ function DashboardPage() {
   return (
     <div className="space-y-6">
       <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-8 text-white">
-        <h1 className="text-3xl font-bold mb-2">Welcome back, {user?.name}!</h1>
-        <p className="text-indigo-100">Here's what's happening with your business today.</p>
+        <h1 className="text-3xl font-bold mb-2">{t('dashboard.welcome')}, {user?.name}!</h1>
+        <p className="text-indigo-100">{t('dashboard.subtitle')}</p>
       </div>
 
       <StatsGrid stats={stats} columns={4} />

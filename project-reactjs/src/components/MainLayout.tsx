@@ -1,5 +1,6 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { useState } from 'react';
 
 // Simple SVG Icons
@@ -100,8 +101,21 @@ const CloseIcon = () => (
   </svg>
 );
 
+const ChatIcon = () => (
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+  </svg>
+);
+
+const WarrantyIcon = () => (
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+  </svg>
+);
+
 export default function MainLayout() {
   const { user, logout } = useAuth();
+  const { t } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -116,46 +130,48 @@ export default function MainLayout() {
     {
       title: 'MAIN',
       items: [
-        { path: '/dashboard', icon: HomeIcon, label: 'Dashboard' },
+        { path: '/dashboard', icon: HomeIcon, label: t('menu.dashboard') },
       ]
     },
     {
       title: 'CUSTOMERS',
       items: [
-        { path: '/customers', icon: CustomerIcon, label: 'All Customers' },
-        { path: '/customer-groups', icon: CustomerIcon, label: 'Customer Groups' },
-        { path: '/customer-reviews', icon: CustomerIcon, label: 'Reviews' },
+        { path: '/customers', icon: CustomerIcon, label: t('menu.customers') },
+        { path: '/customer-groups', icon: CustomerIcon, label: t('menu.customerGroups') },
+        { path: '/customer-reviews', icon: CustomerIcon, label: t('menu.reviews') },
+        { path: '/chat', icon: ChatIcon, label: t('menu.chatSupport') },
       ]
     },
     {
       title: 'ORDERS',
       items: [
-        { path: '/orders', icon: OrderIcon, label: 'All Orders' },
+        { path: '/orders', icon: OrderIcon, label: t('menu.orders') },
       ]
     },
     {
       title: 'PRODUCTS',
       items: [
-        { path: '/products', icon: ProductIcon, label: 'Products' },
-        { path: '/inventory', icon: InventoryIcon, label: 'Inventory' },
-        { path: '/warehouse', icon: WarehouseIcon, label: 'Warehouse' },
+        { path: '/products', icon: ProductIcon, label: t('menu.products') },
+        { path: '/inventory', icon: InventoryIcon, label: t('menu.inventory') },
+        { path: '/warehouse', icon: WarehouseIcon, label: t('menu.warehouse') },
       ]
     },
     {
       title: 'MARKETING',
       items: [
-        { path: '/marketing', icon: MarketingIcon, label: 'Marketing' },
-        { path: '/promotions', icon: PromotionIcon, label: 'Promotions' },
-        { path: '/posts', icon: PostIcon, label: 'Posts' },
+        { path: '/marketing', icon: MarketingIcon, label: t('menu.marketing') },
+        { path: '/promotions', icon: PromotionIcon, label: t('menu.promotions') },
+        { path: '/posts', icon: PostIcon, label: t('menu.posts') },
       ]
     },
     {
       title: 'REPORTS & SETTINGS',
       items: [
-        { path: '/reports', icon: ReportIcon, label: 'Reports' },
-        { path: '/departments', icon: DepartmentIcon, label: 'Departments' },
-        { path: '/user', icon: UserIcon, label: 'User Profile' },
-        { path: '/settings', icon: SettingsIcon, label: 'Settings' },
+        { path: '/reports', icon: ReportIcon, label: t('menu.reports') },
+        { path: '/warranty', icon: WarrantyIcon, label: t('menu.warranty') },
+        { path: '/departments', icon: DepartmentIcon, label: t('menu.departments') },
+        { path: '/user', icon: UserIcon, label: t('menu.userProfile') },
+        { path: '/settings', icon: SettingsIcon, label: t('menu.settings') },
       ]
     }
   ];
@@ -248,7 +264,7 @@ export default function MainLayout() {
             className="flex items-center space-x-3 px-4 py-3 w-full rounded-lg hover:bg-red-500 transition-colors"
           >
             <LogoutIcon />
-            {isSidebarOpen && <span className="font-medium">Logout</span>}
+            {isSidebarOpen && <span className="font-medium">{t('menu.logout')}</span>}
           </button>
         </div>
       </aside>
