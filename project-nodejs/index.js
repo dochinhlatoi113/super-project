@@ -20,6 +20,7 @@ const userRoutes = require('./routes/users');
 const departmentRoutes = require('./routes/departments');
 const permissionRoutes = require('./routes/permissions');
 const adminRoutes = require('./routes/admin'); // Thêm import admin routes
+const conversationRoutes = require('./routes/conversationRoutes'); // Thêm conversation routes
 
 // Import middleware
 const { authenticateToken } = require('./middleware/auth');
@@ -108,6 +109,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/departments', departmentRoutes);
 app.use('/api/permissions', permissionRoutes);
 app.use('/api/admin', adminRoutes); // Thêm admin routes
+app.use('/api/conversations', conversationRoutes); // Thêm conversation routes
 
 // Protected route example
 app.get('/api/hello', authenticateToken, (req, res) => {

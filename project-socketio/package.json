@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node index.js --port 2207",
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,9 +13,12 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
     "kafkajs": "^2.2.4",
+    "mongoose": "^7.6.3",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {

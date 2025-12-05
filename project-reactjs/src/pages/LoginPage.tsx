@@ -36,7 +36,7 @@ function LoginPage() {
         role: response.data.admin.role,
       };
       if(response.data.success === true) {
-        login(response.data.tokens.accessToken, adminInfo);
+         login(response.data.tokens.accessToken, adminInfo);
          navigate('/dashboard');
       }
     } catch (err: any) {
