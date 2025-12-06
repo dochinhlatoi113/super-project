@@ -22,4 +22,5 @@ router.post('/login', validateLogin, AdminController.login);
 // Vipadmin and superadmin can assign permissions to users
 router.post('/users/:id/permissions', authenticateToken, requireVipOrSuperAdmin, AdminController.assignPermissionsToUser);
 
+router.get('/get-all-admin-chat', authenticateToken, AdminController.getAllAdmins);
 module.exports = router;

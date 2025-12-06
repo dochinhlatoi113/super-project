@@ -24,6 +24,32 @@ export const chatService = {
     }
   },
 
+  // Get all admin users for adding friends
+  getAllAdmins: async (token: string, searchQuery: string) => {
+    try {
+     const response = await fetch(
+        `${API_BASE}/chat/get-all-admin-chat?searchQuery=${encodeURIComponent(searchQuery)}`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          }
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to get admins');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Get all admins error:', error);
+      throw error;
+    }
+  },
+
   // Create conversation with specific participant
   createConversation: async (participantId: string, token: string) => {
     try {

@@ -22,7 +22,7 @@ export default function LoginForm() {
   return (
     <div className="max-w-md w-full mx-auto p-8 bg-white rounded-2xl shadow-2xl">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-800">Admin Login</h2>
+        <h2 className="text-3xl font-bold text-gray-800">System Chat</h2>
         <p className="text-gray-600 mt-2">Sign in to your account</p>
       </div>
 
