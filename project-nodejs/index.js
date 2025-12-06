@@ -13,6 +13,8 @@ require('./models/Admin');
 require('./models/Role');
 require('./models/Department');
 require('./models/Permission');
+require('./models/Conversations');
+require('./models/Messages');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -21,6 +23,7 @@ const departmentRoutes = require('./routes/departments');
 const permissionRoutes = require('./routes/permissions');
 const adminRoutes = require('./routes/admin'); // Thêm import admin routes
 const conversationRoutes = require('./routes/conversationRoutes'); // Thêm conversation routes
+const chatRoutes = require('./routes/chat'); // Thêm chat routes
 
 // Import middleware
 const { authenticateToken } = require('./middleware/auth');
@@ -110,15 +113,8 @@ app.use('/api/departments', departmentRoutes);
 app.use('/api/permissions', permissionRoutes);
 app.use('/api/admin', adminRoutes); // Thêm admin routes
 app.use('/api/conversations', conversationRoutes); // Thêm conversation routes
+app.use('/api/chat', chatRoutes); // Thêm chat routes
 
-// Protected route example
-app.get('/api/hello', authenticateToken, (req, res) => {
-  res.json({
-    message: `Xin chào ${req.user.fullName}! Đây là route được bảo vệ.`,
-    user: req.user.toJSON(),
-    timestamp: new Date().toISOString()
-  });
-});
 
 // Protected route - User profile
 app.get('/api/profile', authenticateToken, (req, res) => {

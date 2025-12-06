@@ -36,6 +36,18 @@ class AdminController {
     const result = await AdminService.assignPermissionsToUser(adminId, userId, permissions);
     res.status(result.success ? 200 : 400).json(result);
   }
+
+
+  // Get all admins for chat
+  async getAllAdmins(req, res) {
+    try {
+      const admins = await AdminService.getAllAdminsForChat();
+      res.json({ success: true, data: admins });
+    } catch (error) {
+      console.error('Get all admins error:', error);
+      res.status(500).json({ success: false, message: 'Server error', error: error.message });
+    }
+  }
 }
 
 module.exports = new AdminController();

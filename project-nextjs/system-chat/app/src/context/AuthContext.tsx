@@ -40,40 +40,70 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const token = localStorage.getItem('token');
-    if (!token) return;
+    if (!token) {
+      console.log('❌ No token found for auto refresh');
+      return;
+    }
 
     try {
+      // Kiểm tra token có đúng format JWT không
+      const tokenParts = token.split('.');
+      if (tokenParts.length !== 3) {
+        console.error('❌ Token is not in JWT format:', token.substring(0, 50) + '...');
+        return;
+      }
+
       // Parse JWT để lấy expiry time
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const payload = JSON.parse(atob(tokenParts[1]));
       const currentTime = Math.floor(Date.now() / 1000);
       const timeUntilExpiry = (payload.exp - currentTime) * 1000; // Convert to milliseconds
+
+      console.log('🔍 Token expiry info:', {
+        exp: payload.exp,
+        currentTime,
+        timeUntilExpiry: Math.round(timeUntilExpiry / 1000 / 60),
+        expDate: new Date(payload.exp * 1000).toLocaleString()
+      });
+
+      // Nếu token đã hết hạn, logout ngay lập tức
+      if (timeUntilExpiry <= 0) {
+        console.log('❌ Token already expired, logging out');
+        logout();
+        return;
+      }
 
       // Refresh token 5 phút trước khi hết hạn
       const refreshTime = Math.max(timeUntilExpiry - (5 * 60 * 1000), 1000); // At least 1 second
 
-      console.log(`🔄 Auto refresh scheduled in ${Math.round(refreshTime / 1000 / 60)} minutes`);
+      console.log(`🔄 Auto refresh scheduled in ${Math.round(refreshTime / 1000 / 60)} minutes (${new Date(Date.now() + refreshTime).toLocaleString()})`);
 
       refreshTimeoutRef.current = setTimeout(async () => {
         try {
           console.log('🔄 Auto refreshing token...');
           const newTokens = await authService.refreshToken();
-          
+
           // Update localStorage
           localStorage.setItem('token', newTokens.accessToken);
           localStorage.setItem('refreshToken', newTokens.refreshToken);
-          
+
           console.log('✅ Token auto-refreshed successfully');
-          
+
           // Setup lại auto refresh cho token mới
           setupAutoRefresh();
         } catch (error) {
           console.error('❌ Auto refresh failed:', error);
-          // Logout nếu refresh thất bại
-          logout();
+          // Thử refresh lại sau 30 giây nếu thất bại (có thể do network issue)
+          console.log('⏰ Retrying auto refresh in 30 seconds...');
+          setTimeout(() => {
+            setupAutoRefresh();
+          }, 30000);
         }
       }, refreshTime);
     } catch (error) {
       console.error('❌ Error parsing token for auto refresh:', error);
+      console.error('Token:', token.substring(0, 100) + '...');
+      // Nếu không parse được token, logout
+      logout();
     }
   };
 
@@ -83,11 +113,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const savedToken = localStorage.getItem('token');
 
     if (savedUser && savedToken) {
-      setUser(JSON.parse(savedUser));
-      setIsAuthenticated(true);
-      
-      // Setup auto refresh token
-      setupAutoRefresh();
+      try {
+        setUser(JSON.parse(savedUser));
+        setIsAuthenticated(true);
+
+        console.log('🔐 User authenticated from localStorage');
+
+        // Setup auto refresh token
+        setupAutoRefresh();
+      } catch (error) {
+        console.error('❌ Error parsing saved user data:', error);
+        // Clear corrupted data
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+      }
+    } else {
+      console.log('🔐 No saved authentication found');
     }
     setIsLoading(false);
 

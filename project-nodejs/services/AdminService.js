@@ -254,6 +254,28 @@ class AdminService {
       };
     }
   }
+
+  // Get all admins for chat
+  async getAllAdminsForChat() {
+    try {
+      const admins = await Admin.find({})
+        .select('_id username email fullName avatar role')
+
+      // Format response
+      const formattedAdmins = admins.map(admin => ({
+        _id: admin._id,
+        username: admin.username,
+        email: admin.email,
+        fullName: admin.fullName,
+        avatar: admin.avatar,
+        role: admin.role.name || admin.role,
+      }));
+
+      return formattedAdmins;
+    } catch (error) {
+      throw new Error('Failed to fetch admins for chat');
+    }
+  }
 }
 
 module.exports = new AdminService();
