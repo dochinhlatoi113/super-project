@@ -23,10 +23,29 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Helper function to read saved user from localStorage
+const readSavedUser = (): User | null => {
+  try {
+    if (typeof window === 'undefined') return null;
+    const raw = localStorage.getItem('user');
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (err) {
+    // Corrupted data -> clear it
+    try {
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+    } catch {}
+    return null;
+  }
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  // Use lazy initializer to read from localStorage only once during mount
+  const [user, setUser] = useState<User | null>(() => readSavedUser());
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => !!readSavedUser());
+  const [isLoading, setIsLoading] = useState<boolean>(false); // Start as false since we initialize from localStorage
   const [error, setError] = useState<string | null>(null);
   
   // Ref để lưu timeout cho auto refresh
@@ -108,30 +127,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    // Check if user is logged in from localStorage
-    const savedUser = localStorage.getItem('user');
+    // Only setup auto refresh if user is already authenticated from localStorage
     const savedToken = localStorage.getItem('token');
 
-    if (savedUser && savedToken) {
-      try {
-        setUser(JSON.parse(savedUser));
-        setIsAuthenticated(true);
+    if (savedToken && user) {
+      console.log('🔐 User authenticated from localStorage, setting up auto refresh');
 
-        console.log('🔐 User authenticated from localStorage');
-
-        // Setup auto refresh token
-        setupAutoRefresh();
-      } catch (error) {
-        console.error('❌ Error parsing saved user data:', error);
-        // Clear corrupted data
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-      }
+      // Setup auto refresh token
+      setupAutoRefresh();
     } else {
       console.log('🔐 No saved authentication found');
     }
-    setIsLoading(false);
 
     // Cleanup function
     return () => {
@@ -139,7 +145,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         clearTimeout(refreshTimeoutRef.current);
       }
     };
-  }, []);
+  }, [user]); // Depend on user to re-run when user changes
 
   const login = async (email: string, password: string) => {
     try {
