@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { XMarkIcon, MagnifyingGlassIcon, UserPlusIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, MagnifyingGlassIcon, UserPlusIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import Avatar from './avatar';
 import { chatService } from '../services/chatService';
 
@@ -16,14 +16,17 @@ interface User {
 interface AddUserModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddUser: (userId: string) => void;
+  onAddUser?: (userId: string) => void;
+  onFriendAdded?: () => void;
+  onConversationCreated?: (conversationId: string, participantName?: string) => void;
 }
 
-const AddUserModal = ({ isOpen, onClose, onAddUser }: AddUserModalProps) => {
+const AddUserModal = ({ isOpen, onClose, onAddUser, onFriendAdded, onConversationCreated }: AddUserModalProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [addingUser, setAddingUser] = useState<string | null>(null);
+  const [creatingChatFor, setCreatingChatFor] = useState<string | null>(null);
 
   const searchUsers = async (query: string) => {
     if (!query.trim()) {
@@ -64,12 +67,67 @@ const AddUserModal = ({ isOpen, onClose, onAddUser }: AddUserModalProps) => {
   const handleAddUser = async (userId: string, userName: string) => {
     setAddingUser(userId);
     try {
-      await onAddUser(userId);
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('Missing token');
+
+      // Send friend request to backend
+      const res = await fetch('http://localhost:3000/api/friends/request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ friendId: userId })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to send friend request');
+      }
+
+      // Close modal after success
+      // Notify parent to refresh friends list if provided
+      if (onFriendAdded) {
+        try { onFriendAdded(); } catch (e) { /* ignore */ }
+      }
+
+      // Optional: call parent handler if provided (kept for backward compatibility)
+      if (onAddUser) {
+        try { await onAddUser(userId); } catch (e) { /* ignore parent errors */ }
+      }
+
+      // Close modal after success
       onClose();
     } catch (error) {
       console.error('Add user error:', error);
+      alert(error instanceof Error ? error.message : 'Failed to add friend');
     } finally {
       setAddingUser(null);
+    }
+  };
+
+  const handleOpenChat = async (userId: string) => {
+    setCreatingChatFor(userId);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('Missing token');
+
+      const response = await chatService.createConversation(userId, token);
+      if (response && response.success && response.conversation) {
+        const conversationId = response.conversation._id;
+        // Notify parent to switch to conversation (include participant name)
+        if (onConversationCreated) {
+          try { onConversationCreated(conversationId, userId ? (searchResults.find(u => u._id === userId)?.fullName || undefined) : undefined); } catch (e) {}
+        }
+        onClose();
+      } else {
+        throw new Error(response.message || 'Failed to create conversation');
+      }
+    } catch (err) {
+      console.error('Open chat error:', err);
+      alert(err instanceof Error ? err.message : 'Failed to open chat');
+    } finally {
+      setCreatingChatFor(null);
     }
   };
 
@@ -140,23 +198,38 @@ const AddUserModal = ({ isOpen, onClose, onAddUser }: AddUserModalProps) => {
                         <p className="text-sm text-gray-500">{user.email}</p>
                       </div>
                     </div>
-                    <button
-                      onClick={() => handleAddUser(user._id, user.fullName)}
-                      disabled={addingUser === user._id}
-                      className="flex items-center gap-2 px-3 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      {addingUser === user._id ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          <span>Đang thêm...</span>
-                        </>
-                      ) : (
-                        <>
-                          <UserPlusIcon className="h-4 w-4" />
-                          <span>Thêm</span>
-                        </>
-                      )}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleAddUser(user._id, user.fullName)}
+                        disabled={addingUser === user._id}
+                        className="flex items-center gap-2 px-3 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {addingUser === user._id ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            <span>Đang thêm...</span>
+                          </>
+                        ) : (
+                          <>
+                            <UserPlusIcon className="h-4 w-4" />
+                            <span>Thêm</span>
+                          </>
+                        )}
+                      </button>
+
+                      <button
+                        onClick={() => handleOpenChat(user._id)}
+                        disabled={creatingChatFor === user._id}
+                        title="Mở chat"
+                        className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+                      >
+                        {creatingChatFor === user._id ? (
+                          <div className="w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <ChatBubbleLeftRightIcon className="h-5 w-5 text-gray-700" />
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}

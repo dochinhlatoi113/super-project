@@ -23,29 +23,11 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Helper function to read saved user from localStorage
-const readSavedUser = (): User | null => {
-  try {
-    if (typeof window === 'undefined') return null;
-    const raw = localStorage.getItem('user');
-    if (!raw) return null;
-    return JSON.parse(raw);
-  } catch (err) {
-    // Corrupted data -> clear it
-    try {
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
-    } catch {}
-    return null;
-  }
-};
-
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // Use lazy initializer to read from localStorage only once during mount
-  const [user, setUser] = useState<User | null>(() => readSavedUser());
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => !!readSavedUser());
-  const [isLoading, setIsLoading] = useState<boolean>(false); // Start as false since we initialize from localStorage
+  // Start with neutral state on server. We'll hydrate from localStorage on client in useEffect.
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true); // true until we check client storage
   const [error, setError] = useState<string | null>(null);
   
   // Ref để lưu timeout cho auto refresh
@@ -127,16 +109,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    // Only setup auto refresh if user is already authenticated from localStorage
-    const savedToken = localStorage.getItem('token');
+    // Run only on client: read saved user/token from localStorage and initialize auth state
+    try {
+      const raw = localStorage.getItem('user');
+      const savedUser = raw ? JSON.parse(raw) as User : null;
+      const savedToken = localStorage.getItem('token');
 
-    if (savedToken && user) {
-      console.log('🔐 User authenticated from localStorage, setting up auto refresh');
-
-      // Setup auto refresh token
-      setupAutoRefresh();
-    } else {
-      console.log('🔐 No saved authentication found');
+      if (savedUser && savedToken) {
+        setUser(savedUser);
+        setIsAuthenticated(true);
+        console.log('🔐 User authenticated from localStorage, setting up auto refresh');
+        setupAutoRefresh();
+      } else {
+        console.log('🔐 No saved authentication found');
+      }
+    } catch (err) {
+      console.error('Error reading saved auth from localStorage', err);
+    } finally {
+      setIsLoading(false);
     }
 
     // Cleanup function
@@ -145,7 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         clearTimeout(refreshTimeoutRef.current);
       }
     };
-  }, [user]); // Depend on user to re-run when user changes
+  }, []); // run once on mount
 
   const login = async (email: string, password: string) => {
     try {

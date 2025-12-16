@@ -24,6 +24,8 @@ const permissionRoutes = require('./routes/permissions');
 const adminRoutes = require('./routes/admin'); // Thêm import admin routes
 const conversationRoutes = require('./routes/conversationRoutes'); // Thêm conversation routes
 const chatRoutes = require('./routes/chat'); // Thêm chat routes
+const friendRoutes = require('./routes/friends'); // Thêm friends routes
+const devRoutes = require('./routes/dev'); // Dev-only helpers
 
 // Import middleware
 const { authenticateToken } = require('./middleware/auth');
@@ -114,6 +116,11 @@ app.use('/api/permissions', permissionRoutes);
 app.use('/api/admin', adminRoutes); // Thêm admin routes
 app.use('/api/conversations', conversationRoutes); // Thêm conversation routes
 app.use('/api/chat', chatRoutes); // Thêm chat routes
+app.use('/api/friends', friendRoutes); // Thêm friends routes
+// Dev-only routes (only mount in non-production)
+if (process.env.NODE_ENV !== 'production') {
+  app.use('/api/dev', devRoutes);
+}
 
 
 // Protected route - User profile

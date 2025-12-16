@@ -3,3 +3,5 @@
 3: tạm thời làm là admin , khong làm những gì liên quan đến user
 4: luôn kiểm tra lại
 5: luôn làm clean code, di, contructor,.. để tăng tính mở rộng
+6: luon trả lời bằng tiếng việt
+7: Luôn chọn phương án tốt nhất để thực thi

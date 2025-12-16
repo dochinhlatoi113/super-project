@@ -29,9 +29,10 @@ interface Message {
 
 interface ChattingProps {
   conversationId: string;
+  participantName?: string;
 }
 
-const Chatting = ({ conversationId }: ChattingProps) => {
+const Chatting = ({ conversationId, participantName }: ChattingProps) => {
   const { user } = useAuth();
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
@@ -219,7 +220,15 @@ const Chatting = ({ conversationId }: ChattingProps) => {
         {loading ? (
           <div className="text-center text-gray-400">Đang tải...</div>
         ) : messages.length === 0 ? (
-          <div className="text-center text-gray-400">Chưa có tin nhắn. Hãy bắt đầu trò chuyện!</div>
+          <div className="text-center text-gray-400">
+            {participantName ? (
+              <>
+                Chưa có tin nhắn với <strong>{participantName}</strong>. Hãy bắt đầu trò chuyện!
+              </>
+            ) : (
+              'Chưa có tin nhắn. Hãy bắt đầu trò chuyện!'
+            )}
+          </div>
         ) : (
           messages.map((msg) => {
             const isMe = msg.senderId === user?.id;
