@@ -7,9 +7,31 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true,
     maxlength: 100
-  }});
+  },
+  email: {
+    type: String,
+    required: false,
+    trim: true,
+    unique: true,
+    sparse: true
+  },
+  googleId: {
+    type: String,
+    required: false,
+    unique: true,
+    sparse: true
+  },
+  avatar: {
+    type: String,
+    required: false
+  },
+  provider: {
+    type: String,
+    required: false
+  }
+});
 
-  module.exports = mongoose.model('User', userSchema);
+// ...existing code...
 userSchema.statics.findByRefreshToken = function(token) {
   return this.findOne({ 'refreshTokens.token': token });
 };
@@ -28,4 +50,4 @@ userSchema.methods.toJSON = function() {
   return user;
 };
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('User', userSchema, 'users');

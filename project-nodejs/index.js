@@ -108,6 +108,55 @@ app.get('/', (req, res) => {
   });
 });
 
+// Social login routes
+// GOOGLE
+app.get('/api/v1/login/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+const jwt = require('jsonwebtoken');
+const User = require('./models/User'); 
+app.get('/api/v1/login/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/login', session: false }),
+  async (req, res) => {
+    try {
+      const googleProfile = req.user;
+      console.log('Google profile:', googleProfile);
+      // Tìm user theo googleId hoặc email
+      let user = await User.findOne({ googleId: googleProfile.id }) || await User.findOne({ email: googleProfile.emails[0].value });
+      console.log('User found:', user);
+      if (!user) {
+        // Nếu chưa có, tạo mới
+        user = await User.create({
+          googleId: googleProfile.id,
+          name: googleProfile.displayName,
+          email: googleProfile.emails[0].value,
+          avatar: googleProfile.photos && googleProfile.photos[0] ? googleProfile.photos[0].value : undefined,
+          provider: 'google',
+        });
+        console.log('User created:', user);
+      }
+      // Tạo JWT token
+      const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_ACCESS_SECRET, { expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m' });
+      // Redirect về frontend hoặc trả về token và user info
+      res.json({
+        success: true,
+        token,
+        user: user.toJSON()
+      });
+    } catch (err) {
+      console.error('Google login error:', err);
+      res.status(500).json({ success: false, message: 'Lỗi xử lý Google login', error: err.message });
+    }
+  }
+);
+// FACEBOOK
+app.get('/api/v1/login/facebook', passport.authenticate('facebook', { scope: ['email'] }));
+app.get('/api/v1/login/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: '/login', session: false }),
+  (req, res) => {
+    // Xử lý sau khi đăng nhập thành công
+    res.json({ user: req.user });
+  }
+);
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);

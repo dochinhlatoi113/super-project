@@ -1,4 +1,43 @@
 const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
+const path = require('path');
+const fs = require('fs');
+
+// Đọc Google clientID/clientSecret từ file JSON
+const googleSecretPath = path.join(__dirname, '../client_id_google/client_secret_100943726520-ej0knoijhgkpda4dhjnstvj1jdjf7k00.apps.googleusercontent.com.json');
+const googleCreds = JSON.parse(fs.readFileSync(googleSecretPath, 'utf8'));
+
+// GOOGLE
+passport.use(new GoogleStrategy(
+  {
+  clientID: googleCreds.web.client_id,
+  clientSecret: googleCreds.web.client_secret,
+  callbackURL: 'http://localhost:3000/api/v1/login/google/callback'
+}, async (accessToken, refreshToken, profile, done) => {
+  // TODO: Tìm hoặc tạo user trong database ở đây
+  return done(null, profile);
+}));
+
+// FACEBOOK (bạn cần tự điền appId/appSecret)
+passport.use(new FacebookStrategy({
+  clientID: 'YOUR_FACEBOOK_APP_ID',
+  clientSecret: 'YOUR_FACEBOOK_APP_SECRET',
+  callbackURL: 'http://localhost:3000/api/v1/login/facebook/callback',
+  profileFields: ['id', 'displayName', 'emails']
+}, async (accessToken, refreshToken, profile, done) => {
+  // TODO: Tìm hoặc tạo user trong database ở đây
+  return done(null, profile);
+}));
+
+passport.serializeUser((user, done) => {
+  done(null, user);
+});
+passport.deserializeUser((obj, done) => {
+  done(null, obj);
+});
+
+
 const LocalStrategy = require('passport-local').Strategy;
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;

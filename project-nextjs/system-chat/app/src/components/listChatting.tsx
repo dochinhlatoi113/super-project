@@ -293,19 +293,22 @@ const ListChatting = ({ onConversationSelect, showFriends, onCloseFriends }: Lis
           className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-800"
         />
          <div className="flex items-center justify-between px-2 py-3">
-            <div className="flex items-center justify-start gap-6 overflow-x-auto flex-nowrap py-2 px-1">
+            <div className="flex items-center justify-start gap-4 overflow-x-auto flex-nowrap py-2 px-1">
               <button
                 onClick={handleAddUserClick}
-                className="flex-shrink-0 flex flex-col items-center gap-1 px-2 py-1 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                style={{ minWidth: 56 }}
+                className="flex-shrink-0 flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                style={{ minWidth: 120 }}
               >
-                <UserPlusIcon className="h-6 w-6" />
-                <span className="text-[12px] text-center leading-tight">Add<br/>Admin</span>
+                <UserPlusIcon className="h-5 w-5" />
+                <span className="text-sm font-medium">Add Admin</span>
               </button>
 
-              <button className="flex-shrink-0 flex flex-col items-center gap-1 px-2 py-1 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" style={{ minWidth: 56 }}>
-                <UsersIcon className="h-6 w-6" />
-                <span className="text-[12px] text-center leading-tight">Add<br/>Group<br/>Chat</span>
+              <button
+                className="flex-shrink-0 flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                style={{ minWidth: 140 }}
+              >
+                <UsersIcon className="h-5 w-5" />
+                <span className="text-sm font-medium">Add Group Chat</span>
               </button>
 
               <button
@@ -314,14 +317,14 @@ const ListChatting = ({ onConversationSelect, showFriends, onCloseFriends }: Lis
                   setShowPending(next);
                   if (next) loadPendingRequests();
                 }}
-                className="flex-shrink-0 relative flex flex-col items-center gap-1 px-2 py-1 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                style={{ minWidth: 56 }}
+                className="flex-shrink-0 relative flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                style={{ minWidth: 100 }}
               >
-                <BellIcon className="h-6 w-6" />
+                <BellIcon className="h-5 w-5" />
+                <span className="text-sm font-medium">Lời mời</span>
                 {pendingRequests.length > 0 && (
-                  <span className="absolute -top-1 -right-1 text-[11px] bg-red-500 text-white rounded-full px-2 py-0.5">{pendingRequests.length}</span>
+                  <span className="ml-2 inline-flex items-center justify-center text-[12px] bg-red-500 text-white rounded-full px-2 py-0.5">{pendingRequests.length}</span>
                 )}
-                <span className="text-[12px] text-center">Lời<br/>mời</span>
               </button>
             </div>
         </div>
