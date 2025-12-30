@@ -19,7 +19,7 @@ class ProductCacheService
     public function getProducts()
     {
         try {
-            $perPage = 10000;
+            $perPage = 20;
             $redisKeyBase = "{$this->key}";
             $page = request()->get('page', 1);
             $redisKey = "{$redisKeyBase}:page:{$page}";
