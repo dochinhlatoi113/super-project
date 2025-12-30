@@ -21,15 +21,23 @@ class ProductSeeder extends Seeder
         $brands = Brand::pluck('id')->toArray();
         $categories = Category::pluck('id')->toArray();
 
-        for ($i = 0; $i < 2; $i++) {
+        for ($i = 0; $i < 109581; $i++) {  // Giảm số lượng để test
             $productName = $faker->words(2, true);
             $product = Product::create([
                 'name' => $productName,
                 'slug' => Str::slug($productName) . '-' . Str::random(6),
                 'brand_id' => $faker->randomElement($brands),
-                'category_id' => $faker->randomElement($categories),
                 'is_active' => $faker->boolean(90),
             ]);
+
+            // Attach categories
+            $categoryIds = $faker->randomElements($categories, rand(1, 3));
+            foreach ($categoryIds as $index => $categoryId) {
+                $product->categories()->attach($categoryId, [
+                    'is_primary' => $index === 0 ? 1 : 0,  // First category is primary
+                    'is_active' => 1,
+                ]);
+            }
 
             $variantCount = rand(1, 3);
             for ($j = 1; $j <= $variantCount; $j++) {

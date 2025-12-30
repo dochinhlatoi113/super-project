@@ -8,7 +8,6 @@ class ProductRepository implements ProductRepositoryInterface
 {
     public function paginate($perPage = 15)
     {
-
         return Product::with(['variants.primarySku', 'brand', 'categories'])->orderBy('id', 'desc')->paginate($perPage);
     }
 

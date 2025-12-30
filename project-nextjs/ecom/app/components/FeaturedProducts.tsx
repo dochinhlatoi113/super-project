@@ -1,54 +1,62 @@
 // FeaturedProducts.tsx
-// Component Sản phẩm nổi bật, chia nhóm, tailwind, code sạch, dễ mở rộng
+'use client';
 
 import React from 'react';
 import Link from 'next/link';
+import { useQuery } from '@tanstack/react-query';
+import {  fetchProducts } from '@/lib/api';
 
-const featuredGroups = [
-  {
-    title: 'Điện thoại nổi bật',
-    products: [
-      { id: 1, name: 'iPhone 15 Pro Max', price: '34.990.000₫', image: '/iphone15.jpg' },
-      { id: 2, name: 'Samsung S24 Ultra', price: '28.990.000₫', image: '/s24ultra.jpg' },
-      { id: 3, name: 'Xiaomi 14', price: '19.990.000₫', image: '/xiaomi14.jpg' },
-      { id: 4, name: 'OPPO Find N3', price: '22.990.000₫', image: '/oppon3.jpg' },
-    ],
-  },
-  {
-    title: 'Laptop nổi bật',
-    products: [
-      { id: 5, name: 'MacBook Air M3', price: '27.990.000₫', image: '/macbookair.jpg' },
-      { id: 6, name: 'Dell XPS 13', price: '32.990.000₫', image: '/dellxps.jpg' },
-      { id: 7, name: 'ASUS ZenBook', price: '21.990.000₫', image: '/asuszen.jpg' },
-      { id: 8, name: 'HP Spectre', price: '25.990.000₫', image: '/hpspectre.jpg' },
-    ],
-  },
-];
 
 export default function FeaturedProducts() {
+    const { data: products, isLoading, error } = useQuery({
+    queryKey: ['products'],
+    queryFn: fetchProducts,
+  })
+if (isLoading) {
+    return (
+      <section className="w-full bg-white py-4 shadow-sm">
+        <div className="max-w-7xl mx-auto px-2">
+          <div className="text-center">Loading categories...</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="w-full bg-white py-4 shadow-sm">
+        <div className="max-w-7xl mx-auto px-2">
+          <div className="text-center text-red-500">Error: {error.message}</div>
+        </div>
+      </section>
+    );
+  }  
+  
   return (
     <section className="w-full bg-gray-50 py-6">
       <div className="max-w-7xl mx-auto px-2">
-        {featuredGroups.map((group) => (
-          <div key={group.title} className="mb-8">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">{group.title}</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {group.products.map((p) => {
-                // Tạo slug demo cho sản phẩm, thực tế nên lưu slug trong data
-                let slug = p.name.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '');
-                if (p.name.includes('Vivo V60')) slug = 'vivo-v60-12gb-512gb';
-                return (
-                  <Link key={p.id} href={`/product/${slug}`} className="bg-white rounded-lg shadow hover:shadow-lg transition p-3 flex flex-col items-center cursor-pointer transform hover:scale-105">
-                    <img src={p.image} alt={p.name} className="h-28 w-auto object-contain mb-2" />
-                    <div className="font-medium text-sm text-center mb-1 line-clamp-2">{p.name}</div>
-                    <div className="text-red-600 font-bold text-base">{p.price}</div>
-                    <span className="mt-2 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs">Xem chi tiết</span>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        ))}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {products?.filter(p => p.is_active).map((p) => {
+            const primaryCategory = p.categories?.find(cat => cat.pivot?.is_primary === 1 && cat.pivot?.is_active === 1);
+            const avatar = p.variants?.flatMap(v => v.append_config_variants || []).find(acv => acv.avatar)?.avatar || '/no-image.png';
+            return (
+              <div key={p.id}>
+                <h2 className="text-xl font-bold text-gray-800 mb-4">{primaryCategory?.name || 'No Category'}</h2>
+                <Link href={`/product/${p.name.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '')}`} className="bg-white rounded-lg shadow hover:shadow-lg transition p-3 flex flex-col items-center cursor-pointer transform hover:scale-105">
+                  <img src={avatar} alt={p.name} className="h-28 w-auto object-contain mb-2" />
+                  <div className="text-gray-600 font-bold text-sm text-center mb-1 line-clamp-2">{p.name}</div>
+                  <div className="text-gray-600 text-xs text-center mb-2">{p.brand?.name || 'No Brand'}</div>
+                  <div className="text-red-600 font-bold text-base">{p.variants?.[0]?.append_config_variants?.[0]?.price || 'N/A'}</div>
+                  <div className="mt-2 flex justify-center gap-2">
+                    <button className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs">🔍 So sánh</button>
+                    <button className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs">🛒 Giỏ hàng</button>
+                    <button className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs">⚡ Mua ngay</button>
+                  </div>
+                </Link>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

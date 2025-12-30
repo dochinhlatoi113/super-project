@@ -21,12 +21,9 @@ class BrandSeeder extends Seeder
 
             for ($i = 0; $i < 20; $i++) {
                 $base = $faker->randomElement($brands);
-                $suffix = $faker->unique()->numberBetween(1, 100); 
-                $name = $base . " {$suffix}";
-
                 Brand::create([
-                    'name' => $name,
-                    'slug' => Str::slug($name),
+                    'name' => $base,
+                    'slug' => Str::slug($base),
                     'logo' => 'images/no-image.png',
                     'has_promotion' => $faker->boolean,
                     'order' => $faker->numberBetween(1, 100),

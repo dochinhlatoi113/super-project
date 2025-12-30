@@ -89,8 +89,8 @@ RUN mkdir -p /var/log/supervisor \
  # 🟢 Increase PHP memory limit (avoid 134217728 bytes exhausted)
 RUN echo "memory_limit = -1" > /usr/local/etc/php/conf.d/memory-limit.ini
 
-# Expose port 9000 for PHP-FPM
-EXPOSE 9000
+# Expose port 8000 for Laravel server
+EXPOSE 8000
 
-# Start PHP-FPM
+# Start Laravel server
 CMD ["php-fpm"]

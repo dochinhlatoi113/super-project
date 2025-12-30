@@ -9,7 +9,7 @@ class CategoryRepository implements CategoryRepositoryInterface
 {
     public function paginate(int $perPage = 15): LengthAwarePaginator
     {
-        return Category::orderBy('order')->paginate($perPage);
+         return Category::orderBy('order')->paginate($perPage);
     }
 
     public function find(int $id): ?Category
