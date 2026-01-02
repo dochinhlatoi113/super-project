@@ -47,7 +47,7 @@ class ProductSeeder extends Seeder
                     'color' => $faker->safeColorName(),
                     'size' => $faker->randomElement(['S', 'M', 'L', 'XL']),
                     'storage' => $faker->randomElement([64, 128, 256, 512]),
-                    'price' => $faker->randomFloat(2, 1, 1000),
+                    'price' => $faker->numberBetween(10000, 400000000),
                     'is_active' => true,
                 ];
 

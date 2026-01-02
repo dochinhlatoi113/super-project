@@ -26,6 +26,8 @@ return Application::configure(
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(fn (Middleware $middleware) => null)
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->use([\Illuminate\Http\Middleware\HandleCors::class]);
+    })
     ->withExceptions(fn (Exceptions $exceptions) => null)
     ->create();

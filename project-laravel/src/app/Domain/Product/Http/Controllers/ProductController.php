@@ -96,7 +96,6 @@ class ProductController extends Controller
     public function show(string $slug)
     {
         $product = $this->service->findBySlug($slug);
-
         if (!$product) {
             return $this->notFoundResponse('Product not found');
         }

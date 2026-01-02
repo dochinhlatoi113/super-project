@@ -1,7 +1,8 @@
 <?php
 
 return [
-    App\Domain\ProductVariantAlbums\Providers\ProductVariantAlbumsServiceProvider::class,
+    App\Domain\Payment\Providers\PaymentServiceProvider::class,
+App\Domain\ProductVariantAlbums\Providers\ProductVariantAlbumsServiceProvider::class,
     App\Domain\Product\Providers\ProductServiceProvider::class,
     App\Domain\ProductVariant\Providers\ProductVariantServiceProvider::class,
     App\Domain\Brand\Providers\BrandServiceProvider::class,

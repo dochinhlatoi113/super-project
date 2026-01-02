@@ -13,24 +13,22 @@ class BrandSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        for ($i = 0; $i < 20; $i++) {
-            $brands = [
-                'Apple', 'Samsung', 'Sony', 'LG', 'Panasonic', 
-                'Microsoft', 'Intel', 'Dell', 'HP', 'Asus'
-            ];
+        $brands = [
+            'Apple', 'Samsung', 'Sony', 'LG', 'Panasonic', 
+            'Microsoft', 'Intel', 'Dell', 'HP', 'Asus'
+        ];
 
-            for ($i = 0; $i < 20; $i++) {
-                $base = $faker->randomElement($brands);
-                Brand::create([
+        foreach ($brands as $base) {
+            Brand::firstOrCreate(
+                ['slug' => Str::slug($base)],
+                [
                     'name' => $base,
-                    'slug' => Str::slug($base),
                     'logo' => 'images/no-image.png',
                     'has_promotion' => $faker->boolean,
                     'order' => $faker->numberBetween(1, 100),
                     'status' => 'active',
-                ]);
-            }
-
+                ]
+            );
         }
     }
 }

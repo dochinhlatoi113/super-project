@@ -45,4 +45,40 @@ export const fetchProducts = async (): Promise<Product[]> => {
   return data.data?.data || [];
 };
 
-// Add more API functions as needed
+
+export const fetchProductDetail = async (slug: string): Promise<Product | null> => {
+  const response = await fetch(`${API_BASE_URL}/products/detail/${encodeURIComponent(slug)}`);
+  if (!response.ok) {
+    return null;
+  }
+  const data = await response.json();
+  return data.data || null;
+};
+
+export interface VnpayPaymentRequest {
+  order_id: string;
+  amount: number;
+  payment_method_id?: number;
+}
+
+export interface VnpayPaymentResponse {
+  payment_id: number;
+  vnpay_url: string;
+}
+
+export const createVnpayPayment = async (paymentData: VnpayPaymentRequest): Promise<VnpayPaymentResponse> => {
+  const response = await fetch(`${API_BASE_URL}/payments/vnpay`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(paymentData),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to create VNPAY payment');
+  }
+
+  const data = await response.json();
+  return data;
+};

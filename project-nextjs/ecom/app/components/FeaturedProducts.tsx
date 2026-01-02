@@ -52,18 +52,29 @@ if (isLoading) {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {prods.map((p) => {
                 const avatar = p.variants?.flatMap(v => v.append_config_variants || []).find(acv => acv.avatar)?.avatar || '/no-image.png';
+                const slug = p.slug || (p.name.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, ''));
+                const priceRaw = p.variants?.[0]?.append_config_variants?.[0]?.price;
+                const numericPrice = typeof priceRaw === 'string' ? parseFloat(priceRaw.replace(/[^\d]/g, '')) : priceRaw || 0;
+                const price = numericPrice > 0 ? numericPrice.toLocaleString('vi-VN') + ' ₫' : 'Liên hệ';
                 return (
-                  <Link key={p.id} href={`/product/${p.name.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '')}`} className="bg-white rounded-lg shadow hover:shadow-lg transition p-3 flex flex-col items-center cursor-pointer transform hover:scale-105">
-                    <img src={avatar} alt={p.name} className="h-28 w-auto object-contain mb-2" />
-                    <div className="text-gray-600 font-bold text-sm text-center mb-1 line-clamp-2">{p.name}</div>
-                    <div className="text-gray-600 text-xs text-center mb-2">{p.brand?.name || 'No Brand'}</div>
-                    <div className="text-red-600 font-bold text-base">{p.variants?.[0]?.append_config_variants?.[0]?.price || 'N/A'}</div>
+                  <div key={p.id} className="bg-white rounded-lg shadow hover:shadow-lg transition p-3 flex flex-col items-center cursor-pointer transform hover:scale-105">
+                    <Link href={`/product/${slug}`} className="w-full flex flex-col items-center">
+                      <img src={avatar} alt={p.name} className="h-28 w-auto object-contain mb-2" />
+                      <div className="text-gray-600 font-bold text-sm text-center mb-1 line-clamp-2">{p.name}</div>
+                      <div className="text-gray-600 text-xs text-center mb-2">{p.brand?.name || 'No Brand'}</div>
+                      <div className="text-red-600 font-bold text-base">{price}</div>
+                    </Link>
                     <div className="mt-2 flex justify-center gap-2">
                       <button className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs">🔍 So sánh</button>
                       <button className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs">🛒 Giỏ hàng</button>
-                      <button className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs">⚡ Mua ngay</button>
+                      <button
+                        className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs"
+                        onClick={() => window.location.href = `/checkout?product=${slug}`}
+                      >
+                        ⚡ Mua ngay
+                      </button>
                     </div>
-                  </Link>
+                  </div>
                 );
               })}
             </div>

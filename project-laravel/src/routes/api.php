@@ -14,7 +14,7 @@ Route::prefix('v1')->group(function () {
 
     // Load routes from Domain folders
     $domainPath = app_path('Domain');
-    $domains = ['Product', 'Category', 'Brand']; // Add more domains as needed
+    $domains = ['Product', 'Category', 'Brand', 'Payment']; // Add more domains as needed
 
     foreach ($domains as $domain) {
         $domainRoutePath = "{$domainPath}/{$domain}/routes";
