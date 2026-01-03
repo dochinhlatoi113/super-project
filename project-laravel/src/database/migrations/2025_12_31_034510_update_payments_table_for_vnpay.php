@@ -27,7 +27,18 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('payments', function (Blueprint $table) {
-            $table->dropColumn(['payment_method_id', 'transaction_id', 'vnpay_transaction_no', 'vnpay_response_code']);
+            if (Schema::hasColumn('payments', 'payment_method_id')) {
+                $table->dropColumn('payment_method_id');
+            }
+            if (Schema::hasColumn('payments', 'transaction_id')) {
+                $table->dropColumn('transaction_id');
+            }
+            if (Schema::hasColumn('payments', 'vnpay_transaction_no')) {
+                $table->dropColumn('vnpay_transaction_no');
+            }
+            if (Schema::hasColumn('payments', 'vnpay_response_code')) {
+                $table->dropColumn('vnpay_response_code');
+            }
             $table->unsignedBigInteger('order_id')->change();
             $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
         });

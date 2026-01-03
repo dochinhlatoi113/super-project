@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('product_variant_id')->constrained('product_variants')->onDelete('cascade');
             $table->string('url');
             $table->boolean('is_active')->default(true);
-            $table->integer('income number')->nullable()->comment('Index of the config in product_variant.config array that this SKU belongs to');
+            $table->integer('income_number')->nullable()->comment('Index of the config in product_variant.config array that this SKU belongs to');
             $table->text('log')->nullable();
             $table->timestamps();
         });

@@ -80,36 +80,51 @@ export default function ProductDetailPage() {
       </div>
       <h2 className="text-xl font-semibold mb-2">Brand</h2>
       <div className="overflow-x-auto bg-white rounded shadow border mb-8">
-        <table className="min-w-[400px] w-full">
-          <tbody>
-            {product.brand && Object.entries(product.brand).map(([k, v]) => (
-              <tr key={k}><td className="font-semibold p-2 w-40">{k}</td><td className="p-2">{String(v)}</td></tr>
-            ))}
-          </tbody>
-        </table>
+        {product.brand ? (
+          <table className="min-w-[400px] w-full text-center">
+            <thead className="bg-gray-100">
+              <tr>
+                {Object.keys(product.brand).map((k) => (
+                  <th key={k} className="px-4 py-2 text-center font-semibold">{k}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                {Object.values(product.brand).map((v, idx) => (
+                  <td key={idx} className="px-4 py-2">{String(v)}</td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        ) : (
+          <div className="px-4 py-2 text-gray-500">Không có thông tin brand</div>
+        )}
       </div>
       <h2 className="text-xl font-semibold mb-2">Categories</h2>
       <div className="overflow-x-auto bg-white rounded shadow border">
-        <table className="min-w-[400px] w-full">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-2">ID</th>
-              <th className="p-2">Name</th>
-              <th className="p-2">Slug</th>
-              <th className="p-2">Order</th>
-            </tr>
-          </thead>
-          <tbody>
-            {product.categories?.map((cat: any) => (
-              <tr key={cat.id}>
-                <td className="p-2">{cat.id}</td>
-                <td className="p-2">{cat.name}</td>
-                <td className="p-2">{cat.slug}</td>
-                <td className="p-2">{cat.order}</td>
+        {product.categories && product.categories.length > 0 ? (
+          <table className="min-w-[400px] w-full text-center">
+            <thead className="bg-gray-100">
+              <tr>
+                {Object.keys(product.categories[0]).map((k) => (
+                  <th key={k} className="px-4 py-2 text-center font-semibold">{k}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {product.categories.map((cat: any, idx: number) => (
+                <tr key={cat.id || idx}>
+                  {Object.values(cat).map((v, i) => (
+                    <td key={i} className="px-4 py-2">{String(v)}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="px-4 py-2 text-gray-500">Không có categories</div>
+        )}
       </div>
     </div>
   );
