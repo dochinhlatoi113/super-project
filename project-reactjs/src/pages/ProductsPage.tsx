@@ -1,75 +1,189 @@
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import StatsGrid from '../components/StatsGrid';
 
-export default function ProductsPage() {
-  const stats = [
-    { label: 'Total Products', value: 456 },
-    { label: 'In Stock', value: 398, color: 'text-green-600' },
-    { label: 'Low Stock', value: 42, color: 'text-yellow-600' },
-    { label: 'Out of Stock', value: 16, color: 'text-red-600' },
-  ];
+type Variant = {
+  primary_sku?: { sku?: string };
+  append_config_variants?: { price?: number; storage?: number }[];
+};
 
-  const products = [
-    { id: 1, name: 'Laptop Pro 15"', sku: 'LAP-001', category: 'Electronics', price: '$1,299', stock: 45, status: 'in-stock' },
-    { id: 2, name: 'Wireless Mouse', sku: 'MSE-002', category: 'Accessories', price: '$29', stock: 120, status: 'in-stock' },
-    { id: 3, name: 'USB-C Cable', sku: 'CBL-003', category: 'Accessories', price: '$15', stock: 5, status: 'low-stock' },
-    { id: 4, name: 'Monitor 27"', sku: 'MON-004', category: 'Electronics', price: '$399', stock: 0, status: 'out-of-stock' },
-  ];
+type Product = {
+  id: number;
+  name: string;
+  slug: string;
+  brand?: { name?: string };
+  categories?: { name?: string }[];
+  variants?: Variant[];
+};
+
+export default function ProductsPage() {
+  const navigate = useNavigate();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const [stats, setStats] = useState([
+    { label: 'Total Products', value: 0 },
+    { label: 'In Stock', value: 0, color: 'text-green-600' },
+    { label: 'Low Stock', value: 0, color: 'text-yellow-600' },
+    { label: 'Out of Stock', value: 0, color: 'text-red-600' },
+  ]);
+
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    last_page: 1,
+    per_page: 10,
+    total: 0,
+  });
+
+  const fetchProducts = async (page = 1) => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const res = await fetch(`http://localhost:8000/api/v1/products?page=${page}`);
+      if (!res.ok) throw new Error('Failed to fetch products');
+
+      const data = await res.json();
+      // Laravel chuẩn: data.data.data là mảng, data.data là object phân trang
+      let productsArr: Product[] = [];
+      let pagi = { current_page: 1, last_page: 1, per_page: 10, total: 0 };
+      if (data.data && Array.isArray(data.data.data)) {
+        productsArr = data.data.data;
+        pagi = {
+          current_page: data.data.current_page || 1,
+          last_page: data.data.last_page || 1,
+          per_page: data.data.per_page || 10,
+          total: data.data.total || productsArr.length,
+        };
+      } else if (Array.isArray(data.data)) {
+        productsArr = data.data;
+        pagi = {
+          current_page: 1,
+          last_page: 1,
+          per_page: productsArr.length,
+          total: productsArr.length,
+        };
+      }
+      setProducts(productsArr);
+      setPagination(pagi);
+
+      setStats([
+        { label: 'Total Products', value: data.total },
+        { label: 'In Stock', value: data.in_stock || 0, color: 'text-green-600' },
+        { label: 'Low Stock', value: data.low_stock || 0, color: 'text-yellow-600' },
+        { label: 'Out of Stock', value: data.out_of_stock || 0, color: 'text-red-600' },
+      ]);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts(1);
+  }, []);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="py-4 px-2 md:px-6 lg:px-8 w-full">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Products</h1>
           <p className="text-gray-500 mt-1">Manage your product catalog</p>
         </div>
-        <button className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+        <button className="px-6 py-2 bg-indigo-600 text-white rounded-lg">
           Add Product
         </button>
       </div>
 
-      <StatsGrid stats={stats} columns={4} />
-
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
+      <div className="overflow-x-auto bg-white rounded shadow border">
+        {loading ? (
+          <div className="text-center text-gray-500">Đang tải sản phẩm...</div>
+        ) : error ? (
+          <div className="text-center text-red-500">{error}</div>
+        ) : (
+          <table className="min-w-[900px] w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-600">Product</th>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-600">SKU</th>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-600">Category</th>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-600">Price</th>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-600">Stock</th>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-600">Status</th>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-600">Actions</th>
+                <th className="px-6 py-4 text-left">Product</th>
+                <th className="px-6 py-4 text-left">Slug</th>
+                <th className="px-6 py-4 text-left">Brand</th>
+                <th className="px-6 py-4 text-left">SKU</th>
+                <th className="px-6 py-4 text-left">Category</th>
+                <th className="px-6 py-4 text-left">Price</th>
+                <th className="px-6 py-4 text-left">Stock</th>
+                <th className="px-6 py-4 text-left">Variants</th>
               </tr>
             </thead>
             <tbody>
-              {products.map((product) => (
-                <tr key={product.id} className="border-t hover:bg-gray-50 transition">
-                  <td className="py-4 px-6 font-medium text-gray-800">{product.name}</td>
-                  <td className="py-4 px-6 text-gray-600">{product.sku}</td>
-                  <td className="py-4 px-6 text-gray-600">{product.category}</td>
-                  <td className="py-4 px-6 text-gray-800 font-medium">{product.price}</td>
-                  <td className="py-4 px-6 text-gray-600">{product.stock}</td>
-                  <td className="py-4 px-6">
-                    <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                      product.status === 'in-stock' ? 'bg-green-100 text-green-700' :
-                      product.status === 'low-stock' ? 'bg-yellow-100 text-yellow-700' :
-                      'bg-red-100 text-red-700'
-                    }`}>
-                      {product.status.replace('-', ' ')}
-                    </span>
-                  </td>
-                  <td className="py-4 px-6">
-                    <button className="text-indigo-600 hover:text-indigo-700 text-sm font-medium">
-                      Edit
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {products.map((product) => {
+                const variant = product.variants && product.variants.length > 0 ? product.variants[0] : undefined;
+                return (
+                  <tr key={product.id} className="border-t">
+                    <td className="px-6 py-4">{product.name}</td>
+                    <td className="px-6 py-4">{product.slug}</td>
+                    <td className="px-6 py-4">{product.brand?.name}</td>
+                    <td className="px-6 py-4">{variant?.primary_sku?.sku}</td>
+                    <td className="px-6 py-4">{product.categories?.[0]?.name}</td>
+                    <td className="px-6 py-4">{variant?.append_config_variants?.[0]?.price}</td>
+                    <td className="px-6 py-4">{variant?.append_config_variants?.[0]?.storage}</td>
+                    <td
+                      className="px-6 py-4 text-blue-600 cursor-pointer hover:underline"
+                      onClick={() => navigate(`/products/${product.slug}`, { state: { product } })}
+                    >
+                      detail
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
-        </div>
+        )}
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-center mt-6">
+        <nav className="inline-flex space-x-1">
+          {(() => {
+            const pages = [];
+            const { current_page, last_page } = pagination;
+            if (last_page <= 8) {
+              for (let i = 1; i <= last_page; i++) {
+                pages.push(i);
+              }
+            } else {
+              // 5 đầu, 3 cuối, ... ở giữa
+              for (let i = 1; i <= 5; i++) pages.push(i);
+              if (current_page > 7 && current_page < last_page - 2) {
+                pages.push('...');
+                pages.push(current_page - 1, current_page, current_page + 1);
+                pages.push('...');
+              } else {
+                pages.push('...');
+              }
+              for (let i = last_page - 2; i <= last_page; i++) pages.push(i);
+            }
+            // Loại bỏ trùng lặp và sắp xếp
+            const uniquePages = Array.from(new Set(pages.filter(p => typeof p === 'number' ? p >= 1 && p <= last_page : true)));
+            return uniquePages.map((page, idx) =>
+              page === '...'
+                ? <span key={"ellipsis-" + idx} className="px-2">...</span>
+                : <button
+                    key={page}
+                    onClick={() => fetchProducts(Number(page))}
+                    disabled={page === current_page}
+                    className={`px-3 py-1 mx-1 rounded ${
+                      page === current_page
+                        ? 'bg-indigo-600 text-white'
+                        : 'border'
+                    }`}
+                  >
+                    {page}
+                  </button>
+            );
+          })()}
+        </nav>
       </div>
     </div>
   );

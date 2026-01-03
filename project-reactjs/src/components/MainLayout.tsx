@@ -281,7 +281,7 @@ export default function MainLayout() {
         </header>
 
         {/* Page Content */}
-        <div className="p-6">
+        <div className="">
           <Outlet />
         </div>
       </main>

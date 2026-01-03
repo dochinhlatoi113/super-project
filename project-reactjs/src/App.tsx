@@ -11,6 +11,7 @@ import CustomersPage from './pages/CustomersPage';
 import CustomerGroupsPage from './pages/CustomerGroupsPage';
 import CustomerReviewsPage from './pages/CustomerReviewsPage';
 import ProductsPage from './pages/ProductsPage';
+import ProductDetailPage from './pages/ProductDetailPage';
 import InventoryPage from './pages/InventoryPage';
 import OrdersPage from './pages/OrdersPage';
 import WarehousePage from './pages/WarehousePage';
@@ -38,6 +39,7 @@ function App() {
               <Route path="/customer-groups" element={<CustomerGroupsPage />} />
               <Route path="/customer-reviews" element={<CustomerReviewsPage />} />
               <Route path="/products" element={<ProductsPage />} />
+              <Route path="/products/:slug" element={<ProductDetailPage />} />
               <Route path="/inventory" element={<InventoryPage />} />
               <Route path="/orders" element={<OrdersPage />} />
               <Route path="/warehouse" element={<WarehousePage />} />
