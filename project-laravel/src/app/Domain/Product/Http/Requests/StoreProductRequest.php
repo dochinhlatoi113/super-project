@@ -53,6 +53,7 @@ class StoreProductRequest extends FormRequest
             'product_variant.config.*.size' => ['required', 'string'],
             'product_variant.config.*.price' => ['required', 'integer'],
             'product_variant.config.*.stock' => ['required', 'integer', 'min:0'],
+            'product_variant.config.*.sku' => ['required', 'string'],
             'product_variant.config.*.is_active' => ['boolean'],
 
 

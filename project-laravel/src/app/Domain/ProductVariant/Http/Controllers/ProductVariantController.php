@@ -19,18 +19,38 @@ class ProductVariantController extends Controller
         return response()->json($this->service->list());
     }
 
+
     public function store(StoreProductVariantRequest $request)
     {
-        return response()->json($this->service->create($request->validated()), 201);
+        $data = $request->validated();
+        $attributes = $data['attributes'] ?? [];
+        unset($data['attributes']);
+        $variant = $this->service->create($data);
+        if (!empty($attributes) && isset($variant->id)) {
+            $attrRepo = app(\App\Domain\ProductVariant\Repositories\ProductVariantAttributeRepository::class);
+            $attrRepo->createMany($variant->id, $attributes);
+        }
+        return response()->json($variant, 201);
     }
 
     public function update(UpdateProductVariantRequest $request, $id)
     {
-        return response()->json($this->service->update($id, $request->validated()));
+        $data = $request->validated();
+        $attributes = $data['attributes'] ?? [];
+        unset($data['attributes']);
+        $variant = $this->service->update($id, $data);
+        if (!empty($attributes)) {
+            $attrRepo = app(\App\Domain\ProductVariant\Repositories\ProductVariantAttributeRepository::class);
+            $attrRepo->updateOrCreateMany($id, $attributes);
+        }
+        return response()->json($variant);
     }
 
     public function destroy($id)
     {
+        // Xóa luôn các thuộc tính động EAV khi xóa variant
+        $attrRepo = app(\App\Domain\ProductVariant\Repositories\ProductVariantAttributeRepository::class);
+        $attrRepo->getByVariant($id)->each->delete();
         $this->service->delete($id);
         return response()->json(['message' => 'Deleted successfully']);
     }

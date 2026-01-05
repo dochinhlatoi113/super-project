@@ -16,18 +16,6 @@ class ProductVariantRepository implements ProductVariantRepositoryInterface
             $variant->avatar_product_variants = $data['avatar_product_variants'] ?? null;
             $variant->description = $data['description'] ?? null;
             $variant->is_active = $data['is_active'] ?? true;
-            $cleanConfigs = [];
-            $variantDataAlbum = [];
-            foreach ($data['config'] as $index => $conf) {
-                $variantDataAlbum[] = $conf;
-                 $variantDataAlbum[$index]['income_number'] = $index;
-                if (isset($conf['product_variant_albums'])) {
-                    unset($conf['product_variant_albums']);
-                }
-                $cleanConfigs[] = $conf;
-                $cleanConfigs[$index]['income_number'] = $index;
-            }
-            $variant->config = json_encode($cleanConfigs);
             $variant->save();
             $variantDataAlbum['product_variant_id'] = $variant->id;
             return $variantDataAlbum;

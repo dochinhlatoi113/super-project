@@ -9,3 +9,4 @@ docker exec -it laravel_php php artisan optimize:clear
 
 
 docker exec -it laravel_php 
+

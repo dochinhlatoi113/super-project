@@ -13,7 +13,6 @@ class ProductVariant extends Model
 
     protected $fillable = [
         'product_id',
-        'config',
         'name',
         'price',
         'slug',
@@ -27,13 +26,9 @@ class ProductVariant extends Model
         'price' => 'decimal:2',
         'stock' => 'integer',
         'is_active' => 'boolean',
-        'config' => 'array',
     ];
 
-    protected $visible = ['id', 'name', 'append_config_variants', 'primarySku'];
-
-
-    protected $appends = ['append_config_variants'];
+    protected $visible = ['id', 'name', 'primarySku'];
 
     public function product()
     {
@@ -57,30 +52,5 @@ class ProductVariant extends Model
         return $this->hasOne(\App\Domain\ProductSku\Entities\ProductSku::class, 'product_variant_id')
             ->where('is_primary', true)
             ->where('is_active', true);
-    }
-
-    public function getAppendConfigVariantsAttribute()
-    {
-        $config = is_string($this->config) ? json_decode($this->config, true) : $this->config;
-        if (!is_array($config)) {
-            return [];
-        }
-
-        $allAlbums = $this->albums;
-
-        return collect($config)->map(function ($item) use ($allAlbums) {
-            if (!isset($item['income_number'])) {
-                return $item;
-            }
-
-            $albumsForConfig = $allAlbums->filter(function ($album) use ($item) {
-                return $album->income_number == $item['income_number'];
-            })->values();
-
-            $item['avatar'] = $item->avatar_product_variants ?? null;
-            $item['append_albums'] = $albumsForConfig;
-
-            return $item;
-        })->values()->toArray();
     }
 }

@@ -11,6 +11,7 @@ use App\Domain\ProductSku\Services\ProductSkuService;
 use App\Domain\Brand\Entities\Brand;
 use App\Domain\Category\Entities\Category;
 use Illuminate\Support\Facades\App;
+use App\Domain\ProductVariant\Repositories\ProductVariantAttributeRepository;
 
 class ProductSeeder extends Seeder
 {
@@ -20,6 +21,7 @@ class ProductSeeder extends Seeder
         $skuService = App::make(ProductSkuService::class);
         $brands = Brand::pluck('id')->toArray();
         $categories = Category::pluck('id')->toArray();
+        $attributeRepo = new ProductVariantAttributeRepository();
 
         for ($i = 0; $i < 109581; $i++) {  // Giảm số lượng để test
             $productName = $faker->words(2, true);
@@ -43,14 +45,28 @@ class ProductSeeder extends Seeder
             for ($j = 1; $j <= $variantCount; $j++) {
                 $variantName = $productName . " Variant {$j}";
 
-                $config = [
-                    'color' => $faker->safeColorName(),
-                    'size' => $faker->randomElement(['S', 'M', 'L', 'XL']),
-                    'storage' => $faker->randomElement([64, 128, 256, 512]),
-                    'price' => $faker->numberBetween(10000, 400000000),
-                    'is_active' => true,
+                $eavAttributes = [
+                    [
+                        'attribute' => 'color',
+                        'value' => $faker->safeColorName(),
+                        'is_filterable' => true,
+                    ],
+                    [
+                        'attribute' => 'size',
+                        'value' => $faker->randomElement(['S', 'M', 'L', 'XL']),
+                        'is_filterable' => true,
+                    ],
+                    [
+                        'attribute' => 'storage',
+                        'value' => $faker->randomElement([64, 128, 256, 512]),
+                        'is_filterable' => true,
+                    ],
+                    [
+                        'attribute' => 'price',
+                        'value' => $faker->numberBetween(10000, 400000000),
+                        'is_filterable' => false,
+                    ],
                 ];
-
                 $variant = ProductVariant::create([
                     'product_id' => $product->id,
                     'name' => $variantName,
@@ -58,8 +74,8 @@ class ProductSeeder extends Seeder
                     'stock' => $faker->numberBetween(0, 100),
                     'is_active' => true,
                     'description' => $faker->sentence(10),
-                    'config' => json_encode([$config, $config]),
                 ]);
+                $attributeRepo->createMany($variant->id, $eavAttributes);
 
                 // Create 2 SKUs and 2 barcodes for this variant
                 try {
@@ -102,6 +118,31 @@ class ProductSeeder extends Seeder
                     // Log error but continue
                     $this->command->error("Failed to create SKUs for variant {$variant->id}: " . $e->getMessage());
                 }
+
+                // EAV attributes for this variant (hybrid model)
+                $eavAttributes = [
+                    [
+                        'attribute' => 'color',
+                        'value' => $faker->safeColorName(),
+                        'is_filterable' => true,
+                    ],
+                    [
+                        'attribute' => 'size',
+                        'value' => $faker->randomElement(['S', 'M', 'L', 'XL']),
+                        'is_filterable' => true,
+                    ],
+                    [
+                        'attribute' => 'storage',
+                        'value' => $faker->randomElement([64, 128, 256, 512]),
+                        'is_filterable' => true,
+                    ],
+                    [
+                        'attribute' => 'price',
+                        'value' => $faker->numberBetween(10000, 400000000),
+                        'is_filterable' => false,
+                    ],
+                ];
+                $attributeRepo->createMany($variant->id, $eavAttributes);
             }
         }
 

@@ -107,75 +107,57 @@
                             "type": "text"
                         },
                         {
-                            "key": "product_variant[config][0][color]",
+                            "key": "product_variant[attributes][0][attribute]",
+                            "value": "color",
+                            "description": "Color attribute",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[attributes][0][value]",
                             "value": "red",
-                            "description": "First config color",
+                            "description": "Color value",
                             "type": "text"
                         },
                         {
-                            "key": "product_variant[config][0][size]",
+                            "key": "product_variant[attributes][0][is_filterable]",
+                            "value": "1",
+                            "description": "Is filterable color",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[attributes][1][attribute]",
+                            "value": "size",
+                            "description": "Size attribute",
+                            "type": "text"
+                        },
+                        {
+                            "key": "product_variant[attributes][1][value]",
                             "value": "14 inch",
-                            "description": "First config size",
+                            "description": "Size value",
                             "type": "text"
                         },
                         {
-                            "key": "product_variant[config][0][stock]",
-                            "value": "10",
-                            "description": "First config stock",
+                            "key": "product_variant[attributes][1][is_filterable]",
+                            "value": "1",
+                            "description": "Is filterable size",
                             "type": "text"
                         },
                         {
-                            "key": "product_variant[config][0][product_variant_albums][0][file]",
-                            "value": "",
-                            "description": "url file 0 config",
-                            "type": "file"
+                            "key": "product_variant[attributes][2][attribute]",
+                            "value": "price",
+                            "description": "Price attribute",
+                            "type": "text"
                         },
                         {
-                            "key": "product_variant[config][0][product_variant_albums][1][file]",
-                            "value": "",
-                            "description": "url file 1 config",
-                            "type": "file"
-                        },
-                        {
-                            "key": "product_variant[config][0][price]",
+                            "key": "product_variant[attributes][2][value]",
                             "value": "2",
-                            "description": "First config price",
+                            "description": "Price value",
                             "type": "text"
                         },
                         {
-                            "key": "product_variant[config][0][is_active]",
-                            "value": "1",
-                            "description": "First config active status",
-                            "type": "text"
-                        },
-                        {
-                            "key": "product_variant[config][1][color]",
-                            "value": "yellow",
-                            "description": "Second config color",
-                            "type": "text"
-                        },
-                        {
-                            "key": "product_variant[config][1][size]",
-                            "value": "15 inch",
-                            "description": "Second config size",
-                            "type": "text"
-                        },
-                        {
-                            "key": "product_variant[config][1][stock]",
-                            "value": "90",
-                            "description": "Second config stock",
-                            "type": "text"
-                        },
-                        {
-                            "key": "product_variant[config][1][price]",
-                            "value": "5",
-                            "description": "Second config price",
-                            "type": "text"
-                        },
-                        {
-                            "key": "product_variant[config][1][is_active]",
-                            "value": "1",
-                            "description": "Second config active status",
+                            "key": "product_variant[attributes][2][is_filterable]",
+                            "value": "0",
+                            "description": "Is filterable price",
                             "type": "text"
                         },
                         {
