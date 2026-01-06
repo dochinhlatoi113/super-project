@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductVariant extends Model
 {
+    public function attributes()
+    {
+        return $this->hasMany(\App\Domain\ProductVariant\Entities\ProductVariantAttribute::class, 'product_variant_id');
+    }
     use SoftDeletes;
 
     protected $table = 'product_variants';
@@ -28,7 +32,7 @@ class ProductVariant extends Model
         'is_active' => 'boolean',
     ];
 
-    protected $visible = ['id', 'name', 'primarySku'];
+    protected $visible = ['id', 'name', 'primarySku', 'stock', 'price'];
 
     public function product()
     {

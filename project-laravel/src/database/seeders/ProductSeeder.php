@@ -72,6 +72,7 @@ class ProductSeeder extends Seeder
                     'name' => $variantName,
                     'slug' => Str::slug($variantName) . '-' . Str::random(6),
                     'stock' => $faker->numberBetween(0, 100),
+                    'price' => $faker->numberBetween(10000, 400000000),
                     'is_active' => true,
                     'description' => $faker->sentence(10),
                 ]);

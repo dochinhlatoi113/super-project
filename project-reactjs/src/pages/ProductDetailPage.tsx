@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 export default function ProductDetailPage() {
+    const formatCurrency = (value: string | number) => {
+      if (value === '-' || value === undefined || value === null) return '-';
+      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(value));
+    };
   const { slug } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState<any>(null);
@@ -60,21 +64,23 @@ export default function ProductDetailPage() {
               <th className="px-4 py-2">Stock</th>
               <th className="px-4 py-2">Price</th>
               <th className="px-4 py-2">Color</th>
+              <th className="px-4 py-2">Size</th>
+              <th className="px-4 py-2">Storage</th>
             </tr>
           </thead>
           <tbody>
-            {product.variants?.flatMap((v: any) =>
-              v.append_config_variants?.map((cfg: any, idx: number) => (
-                <tr key={v.id + '-' + idx} className="border-t">
-                  <td className="px-4 py-2">{v.id}</td>
-                  <td className="px-4 py-2">{v.name}</td>
-                  <td className="px-4 py-2">{v.primary_sku?.sku}</td>
-                  <td className="px-4 py-2">{cfg.storage}</td>
-                  <td className="px-4 py-2">{cfg.price}</td>
-                  <td className="px-4 py-2">{cfg.color}</td>
-                </tr>
-              ))
-            )}
+            {product.variants?.map((v: any) => (
+              <tr key={v.id} className="border-t">
+                <td className="px-4 py-2">{v.id}</td>
+                <td className="px-4 py-2">{v.name}</td>
+                <td className="px-4 py-2">{v.primary_sku?.sku ?? '-'}</td>
+                <td className="px-4 py-2">{v.stock ?? '-'}</td>
+                <td className="px-4 py-2">{formatCurrency(v.price ?? v.attributes?.find((a: any) => a.attribute === 'price')?.value ?? '-')}</td>
+                <td className="px-4 py-2">{v.attributes?.find((a: any) => a.attribute === 'color')?.value ?? '-'}</td>
+                <td className="px-4 py-2">{v.attributes?.find((a: any) => a.attribute === 'size')?.value ?? '-'}</td>
+                <td className="px-4 py-2">{v.attributes?.find((a: any) => a.attribute === 'storage')?.value ?? '-'}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

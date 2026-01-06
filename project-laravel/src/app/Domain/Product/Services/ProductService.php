@@ -57,7 +57,13 @@ class ProductService
         $product = $this->repo->findBySlug($slug);
 
         if ($product) {
-            $product->load(['variants.albums', 'variants.primarySku', 'brand', 'categories']);
+            $product->load([
+                'variants.albums',
+                'variants.primarySku',
+                'variants.attributes',
+                'brand',
+                'categories',
+            ]);
         }
 
         return $product;

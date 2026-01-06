@@ -4,7 +4,7 @@ import StatsGrid from '../components/StatsGrid';
 
 type Variant = {
   primary_sku?: { sku?: string };
-  append_config_variants?: { price?: number; storage?: number }[];
+  attributes?: { attribute: string; value: string | number; is_filterable?: boolean }[];
 };
 
 type Product = {
@@ -17,6 +17,10 @@ type Product = {
 };
 
 export default function ProductsPage() {
+    const formatCurrency = (value: string | number) => {
+      if (value === '-' || value === undefined || value === null) return '-';
+      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(value));
+    };
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,8 +33,8 @@ export default function ProductsPage() {
     { label: 'Out of Stock', value: 0, color: 'text-red-600' },
   ]);
 
+  const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState({
-    current_page: 1,
     last_page: 1,
     per_page: 10,
     total: 0,
@@ -47,11 +51,10 @@ export default function ProductsPage() {
       const data = await res.json();
       // Laravel chuẩn: data.data.data là mảng, data.data là object phân trang
       let productsArr: Product[] = [];
-      let pagi = { current_page: 1, last_page: 1, per_page: 10, total: 0 };
+      let pagi = { last_page: 1, per_page: 10, total: 0 };
       if (data.data && Array.isArray(data.data.data)) {
         productsArr = data.data.data;
         pagi = {
-          current_page: data.data.current_page || 1,
           last_page: data.data.last_page || 1,
           per_page: data.data.per_page || 10,
           total: data.data.total || productsArr.length,
@@ -59,7 +62,6 @@ export default function ProductsPage() {
       } else if (Array.isArray(data.data)) {
         productsArr = data.data;
         pagi = {
-          current_page: 1,
           last_page: 1,
           per_page: productsArr.length,
           total: productsArr.length,
@@ -82,8 +84,9 @@ export default function ProductsPage() {
   };
 
   useEffect(() => {
-    fetchProducts(1);
-  }, []);
+    fetchProducts(currentPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]);
 
   return (
     <div className="py-4 px-2 md:px-6 lg:px-8 w-full">
@@ -106,6 +109,7 @@ export default function ProductsPage() {
           <table className="min-w-[900px] w-full">
             <thead className="bg-gray-50">
               <tr>
+                <th className="px-6 py-4 text-left">Product ID</th>
                 <th className="px-6 py-4 text-left">Product</th>
                 <th className="px-6 py-4 text-left">Slug</th>
                 <th className="px-6 py-4 text-left">Brand</th>
@@ -119,15 +123,32 @@ export default function ProductsPage() {
             <tbody>
               {products.map((product) => {
                 const variant = product.variants && product.variants.length > 0 ? product.variants[0] : undefined;
+                let price = '-';
+                let stock = '-';
+                if (variant) {
+                  if (variant.stock !== undefined && variant.stock !== null) {
+                    stock = variant.stock;
+                  } else if (Array.isArray(variant.attributes)) {
+                    const stockAttr = variant.attributes.find(a => a.attribute === 'stock' || a.attribute === 'storage');
+                    if (stockAttr && stockAttr.value !== undefined && stockAttr.value !== null) stock = stockAttr.value;
+                  }
+                  if (variant.price !== undefined && variant.price !== null) {
+                    price = variant.price;
+                  } else if (Array.isArray(variant.attributes)) {
+                    const priceAttr = variant.attributes.find(a => a.attribute === 'price');
+                    if (priceAttr && priceAttr.value !== undefined && priceAttr.value !== null) price = priceAttr.value;
+                  }
+                }
                 return (
                   <tr key={product.id} className="border-t">
+                    <td className="px-6 py-4">{product.id}</td>
                     <td className="px-6 py-4">{product.name}</td>
                     <td className="px-6 py-4">{product.slug}</td>
                     <td className="px-6 py-4">{product.brand?.name}</td>
                     <td className="px-6 py-4">{variant?.primary_sku?.sku}</td>
                     <td className="px-6 py-4">{product.categories?.[0]?.name}</td>
-                    <td className="px-6 py-4">{variant?.append_config_variants?.[0]?.price}</td>
-                    <td className="px-6 py-4">{variant?.append_config_variants?.[0]?.storage}</td>
+                    <td className="px-6 py-4">{formatCurrency(price)}</td>
+                    <td className="px-6 py-4">{stock}</td>
                     <td
                       className="px-6 py-4 text-blue-600 cursor-pointer hover:underline"
                       onClick={() => navigate(`/products/${product.slug}`, { state: { product } })}
@@ -144,45 +165,21 @@ export default function ProductsPage() {
 
       {/* Pagination */}
       <div className="flex justify-center mt-6">
-        <nav className="inline-flex space-x-1">
-          {(() => {
-            const pages = [];
-            const { current_page, last_page } = pagination;
-            if (last_page <= 8) {
-              for (let i = 1; i <= last_page; i++) {
-                pages.push(i);
-              }
-            } else {
-              // 5 đầu, 3 cuối, ... ở giữa
-              for (let i = 1; i <= 5; i++) pages.push(i);
-              if (current_page > 7 && current_page < last_page - 2) {
-                pages.push('...');
-                pages.push(current_page - 1, current_page, current_page + 1);
-                pages.push('...');
-              } else {
-                pages.push('...');
-              }
-              for (let i = last_page - 2; i <= last_page; i++) pages.push(i);
-            }
-            // Loại bỏ trùng lặp và sắp xếp
-            const uniquePages = Array.from(new Set(pages.filter(p => typeof p === 'number' ? p >= 1 && p <= last_page : true)));
-            return uniquePages.map((page, idx) =>
-              page === '...'
-                ? <span key={"ellipsis-" + idx} className="px-2">...</span>
-                : <button
-                    key={page}
-                    onClick={() => fetchProducts(Number(page))}
-                    disabled={page === current_page}
-                    className={`px-3 py-1 mx-1 rounded ${
-                      page === current_page
-                        ? 'bg-indigo-600 text-white'
-                        : 'border'
-                    }`}
-                  >
-                    {page}
-                  </button>
-            );
-          })()}
+        <nav className="flex flex-wrap gap-2 max-w-full">
+          {Array.from({ length: pagination.last_page }, (_, i) => i + 1).map(page => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              disabled={page === currentPage}
+              className={`px-3 py-1 rounded ${
+                page === currentPage
+                  ? 'bg-indigo-600 text-white'
+                  : 'border'
+              }`}
+            >
+              {page}
+            </button>
+          ))}
         </nav>
       </div>
     </div>
