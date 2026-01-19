@@ -86,7 +86,9 @@ pipeline {
 
                     REM Start application in background
                     start /B npm run start
-                    timeout /t 5
+                    
+                    REM Wait 5 seconds for app to start
+                    ping -n 6 127.0.0.1 > nul
 
                     echo Application started on port ${PORT}
                 """
@@ -97,7 +99,9 @@ pipeline {
             steps {
                 bat """
                     echo ==== HEALTH CHECK ====
-                    timeout /t 8
+                    
+                    REM Wait 8 seconds for app to fully start
+                    ping -n 9 127.0.0.1 > nul
 
                     powershell -Command ^
                       "try { ^
