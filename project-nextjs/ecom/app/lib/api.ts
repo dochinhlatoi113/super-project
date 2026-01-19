@@ -25,6 +25,9 @@ export interface Product {
   variants: any[]; // Define properly if needed
   brand: any; // Define properly if needed
   categories: any[]; // Define properly if needed
+  image?: string;
+  price?: string | number;
+  desc?: string;
 }
 
 export const fetchCategories = async (): Promise<Category[]> => {

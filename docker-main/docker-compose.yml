@@ -15,10 +15,12 @@ services:
         depends_on:
             - mysql
             - redis
+            - postgres  
         networks:
             - laravel
         ports:
             - "8000:8000"
+    
     phpmyadmin:
         image: phpmyadmin/phpmyadmin:latest
         container_name: laravel_phpmyadmin
@@ -35,7 +37,6 @@ services:
         networks:
             - laravel
 
-   
     nginx:
         image: nginx:stable
         container_name: laravel_nginx
@@ -62,6 +63,36 @@ services:
         volumes:
             - mysql_data:/var/lib/mysql
             - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+        networks:
+            - laravel
+
+    postgres:
+        image: postgres:16-alpine
+        container_name: laravel_postgres
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: laravel
+            POSTGRES_USER: laravel
+            POSTGRES_PASSWORD: laravel
+        ports:
+            - '5432:5432'
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - laravel
+
+    pgadmin:
+        image: dpage/pgadmin4:latest
+        container_name: laravel_pgadmin
+        restart: unless-stopped
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@admin.com
+            PGADMIN_DEFAULT_PASSWORD: admin
+            PGADMIN_CONFIG_SERVER_MODE: 'False'
+        ports:
+            - '5050:80'
+        depends_on:
+            - postgres
         networks:
             - laravel
 
@@ -134,7 +165,6 @@ services:
         environment:
             - xpack.monitoring.enabled=false
             - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-            # Credentials for Elasticsearch access by Logstash - set at runtime or via .env/docker secrets
             - LOGSTASH_ES_USERNAME=elastic
             - LOGSTASH_ES_PASSWORD=msWrVIxIVyrLgXPwfZj4
         ports:
@@ -202,12 +232,10 @@ services:
         environment:
             KAFKA_BROKER_ID: 1
             KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-
             KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092
             KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
             KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
             KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-
             KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
             KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
         depends_on:
@@ -220,6 +248,7 @@ services:
 volumes:
     mysql_data:
     redis_data:
+    postgres_data: 
     mongodb_data:
     mongodb_config:
     esdata:
