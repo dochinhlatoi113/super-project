@@ -1,4 +1,4 @@
 # Google OAuth secret
 project-nodejs/client_id_google/*.json
 node_modules
-project-nestjs/
+
