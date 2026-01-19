@@ -2,11 +2,15 @@ pipeline {
     agent { label 'window-01-node' }
 
     environment {
-        APP_NAME = 'ecom-nextjs'
+        APP_NAME    = 'ecom-nextjs'
         DEPLOY_PATH = 'D:/laptrinh/jenskin-01-agent/deploy_path/ecom-nextjs'
         PROJECT_DIR = 'project-nextjs/ecom'
-        PORT = '3000'
-        NODE_ENV = 'production'
+        PORT        = '3000'
+        NODE_ENV    = 'production'
+    }
+
+    options {
+        timestamps()
     }
 
     stages {
@@ -22,8 +26,9 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 bat """
-                    cd ${PROJECT_DIR}
+                    cd /d ${PROJECT_DIR}
                     npm install
+                    npm install pm2 --save-dev
                 """
             }
         }
@@ -31,7 +36,7 @@ pipeline {
         stage('Build Next.js') {
             steps {
                 bat """
-                    cd ${PROJECT_DIR}
+                    cd /d ${PROJECT_DIR}
                     npm run build
                 """
             }
@@ -40,7 +45,7 @@ pipeline {
         stage('Create .env.production') {
             steps {
                 bat """
-                    cd ${PROJECT_DIR}
+                    cd /d ${PROJECT_DIR}
                     (
                       echo NODE_ENV=${NODE_ENV}
                       echo PORT=${PORT}
@@ -52,10 +57,17 @@ pipeline {
         stage('Deploy Source Code') {
             steps {
                 bat """
-                    if exist "${DEPLOY_PATH}" rmdir /S /Q "${DEPLOY_PATH}"
+                    echo ==== DEPLOY SOURCE CODE ====
+
+                    if exist "${DEPLOY_PATH}" (
+                        rmdir /S /Q "${DEPLOY_PATH}"
+                    )
+
                     mkdir "${DEPLOY_PATH}"
 
                     robocopy ${PROJECT_DIR} "${DEPLOY_PATH}" /E /MIR
+                    echo Robocopy done
+
                     exit 0
                 """
             }
@@ -64,9 +76,11 @@ pipeline {
         stage('Start Application') {
             steps {
                 bat """
-                    cd ${DEPLOY_PATH}
+                    echo ==== START APPLICATION ====
 
-                    npx pm2 delete ${APP_NAME} || exit 0
+                    cd /d ${DEPLOY_PATH}
+
+                    npx pm2 delete ${APP_NAME} || echo App not exists
                     npx pm2 start npm --name ${APP_NAME} -- run start
                     npx pm2 save
                     npx pm2 list
@@ -77,9 +91,17 @@ pipeline {
         stage('Health Check') {
             steps {
                 bat """
-                    timeout /t 5
+                    echo ==== HEALTH CHECK ====
+                    timeout /t 8
 
-                    powershell -Command "Invoke-WebRequest http://localhost:${PORT} -UseBasicParsing"
+                    powershell -Command ^
+                      "try { ^
+                        Invoke-WebRequest http://localhost:${PORT} -UseBasicParsing -TimeoutSec 5; ^
+                        Write-Host 'Health check OK' ^
+                      } catch { ^
+                        Write-Error 'Health check FAILED'; ^
+                        exit 1 ^
+                      }"
 
                     npx pm2 info ${APP_NAME}
                 """
