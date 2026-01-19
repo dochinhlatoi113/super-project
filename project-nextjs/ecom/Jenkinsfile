@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         APP_NAME = 'ecom-nextjs'
-        DEPLOY_PATH = 'D:\\laptrinh\\jenskin-01-agent\\deploy_path\\ecom-nextjs'
+        DEPLOY_PATH = 'D:/laptrinh/jenskin-01-agent/deploy_path/ecom-nextjs'
         PROJECT_DIR = 'project-nextjs/ecom'
         PORT = '3000'
         NODE_ENV = 'production'
@@ -42,7 +42,7 @@ pipeline {
                 bat """
                     cd ${PROJECT_DIR}
                     (
-                      echo NODE_ENV=production
+                      echo NODE_ENV=${NODE_ENV}
                       echo PORT=${PORT}
                     ) > .env.production
                 """
@@ -55,10 +55,8 @@ pipeline {
                     if exist "${DEPLOY_PATH}" rmdir /S /Q "${DEPLOY_PATH}"
                     mkdir "${DEPLOY_PATH}"
 
-                    bat '''
-                    robocopy project-nextjs/ecom "D:/laptrinh/jenskin-01-agent/deploy_path/ecom-nextjs" /E /MIR
+                    robocopy ${PROJECT_DIR} "${DEPLOY_PATH}" /E /MIR
                     exit 0
-                    '''
                 """
             }
         }
@@ -66,12 +64,12 @@ pipeline {
         stage('Start Application') {
             steps {
                 bat """
-                    pm2 delete ${APP_NAME} 2>nul
-
                     cd ${DEPLOY_PATH}
-                    pm2 start npm --name ${APP_NAME} -- run start
-                    pm2 save
-                    pm2 list
+
+                    npx pm2 delete ${APP_NAME} || exit 0
+                    npx pm2 start npm --name ${APP_NAME} -- run start
+                    npx pm2 save
+                    npx pm2 list
                 """
             }
         }
@@ -80,8 +78,10 @@ pipeline {
             steps {
                 bat """
                     timeout /t 5
-                    curl http://localhost:${PORT}
-                    pm2 info ${APP_NAME}
+
+                    powershell -Command "Invoke-WebRequest http://localhost:${PORT} -UseBasicParsing"
+
+                    npx pm2 info ${APP_NAME}
                 """
             }
         }
