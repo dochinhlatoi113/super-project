@@ -1,12 +1,6 @@
 pipeline {
-    agent {
-        label 'window-01-node'
-    }
-    
-    triggers {
-        pollSCM('H/2 * * * *')
-    }
-    
+    agent { label 'window-01-node' }
+
     environment {
         APP_NAME = 'ecom-nextjs'
         DEPLOY_PATH = 'D:\\laptrinh\\jenskin-01-agent\\deploy_path\\ecom-nextjs'
@@ -14,205 +8,88 @@ pipeline {
         PORT = '3000'
         NODE_ENV = 'production'
     }
-    
+
     stages {
-        stage('Cleanup Workspace') {
-            steps {
-                echo '🧹 Cleaning workspace...'
-                deleteDir()
-            }
-        }
-        
+
         stage('Checkout Code') {
             steps {
-                echo '📥 Pulling code from GitHub...'
                 git branch: 'main',
                     credentialsId: 'github-credential',
                     url: 'https://github.com/dochinhlatoi113/super-project.git'
-                
-                script {
-                    bat '''
-                        echo === Git Info ===
-                        git log -1 --pretty=format:"Commit: %%h"
-                        echo.
-                        git log -1 --pretty=format:"Author: %%an"
-                        echo.
-                        git log -1 --pretty=format:"Message: %%s"
-                        echo.
-                    '''
-                }
             }
         }
-        
-        stage('Navigate to Project') {
-            steps {
-                echo "📂 Project location: ${PROJECT_DIR}"
-                bat """
-                    cd ${PROJECT_DIR}
-                    dir
-                """
-            }
-        }
-        
-        stage('Check Environment') {
-            steps {
-                echo '⚙️ Checking Node.js and npm...'
-                bat '''
-                    node --version
-                    npm --version
-                    pm2 --version 2>nul || echo PM2 not installed
-                '''
-            }
-        }
-        
+
         stage('Install Dependencies') {
             steps {
-                echo '📦 Installing dependencies...'
                 bat """
                     cd ${PROJECT_DIR}
                     npm install
                 """
             }
         }
-        
-        stage('Create Environment File') {
-            steps {
-                echo '⚙️ Creating .env.production...'
-                bat """
-                    cd ${PROJECT_DIR}
-                    (
-                        echo NODE_ENV=production
-                        echo PORT=${PORT}
-                    ) > .env.production
-                    
-                    type .env.production
-                """
-            }
-        }
-        
-        stage('Run Tests') {
-            steps {
-                echo '🧪 Running tests...'
-                bat """
-                    cd ${PROJECT_DIR}
-                    npm test 2>nul || echo No tests configured
-                """
-            }
-        }
-        
+
         stage('Build Next.js') {
             steps {
-                echo '🔨 Building Next.js application...'
                 bat """
                     cd ${PROJECT_DIR}
                     npm run build
-                    dir .next
                 """
             }
         }
-        
-        stage('Create Deploy Directory') {
+
+        stage('Create .env.production') {
             steps {
-                echo '📁 Creating deploy directory...'
-                bat """
-                    if not exist "${DEPLOY_PATH}" mkdir "${DEPLOY_PATH}"
-                """
-            }
-        }
-        
-        stage('Deploy Files') {
-            steps {
-                echo '🚀 Deploying application...'
                 bat """
                     cd ${PROJECT_DIR}
-                    
-                    echo Copying .next folder...
-                    xcopy /E /I /Y .next "${DEPLOY_PATH}\\.next"
-                    
-                    echo Copying public folder...
-                    if exist public xcopy /E /I /Y public "${DEPLOY_PATH}\\public"
-                    
-                    echo Copying package files...
-                    copy /Y package.json "${DEPLOY_PATH}\\package.json"
-                    if exist package-lock.json copy /Y package-lock.json "${DEPLOY_PATH}\\package-lock.json"
-                    
-                    echo Copying config files...
-                    if exist next.config.js copy /Y next.config.js "${DEPLOY_PATH}\\next.config.js"
-                    if exist next.config.mjs copy /Y next.config.mjs "${DEPLOY_PATH}\\next.config.mjs"
-                    
-                    echo Copying environment file...
-                    copy /Y .env.production "${DEPLOY_PATH}\\.env.production"
-                    
-                    echo Deployment files copied successfully
+                    (
+                      echo NODE_ENV=production
+                      echo PORT=${PORT}
+                    ) > .env.production
                 """
             }
         }
-        
-        stage('Install Production Dependencies') {
+
+        stage('Deploy Source Code') {
             steps {
-                echo '📦 Installing production dependencies...'
                 bat """
-                    cd ${DEPLOY_PATH}
-                    npm install --production --no-optional
+                    if exist "${DEPLOY_PATH}" rmdir /S /Q "${DEPLOY_PATH}"
+                    mkdir "${DEPLOY_PATH}"
+
+                    xcopy /E /I /Y ${PROJECT_DIR} "${DEPLOY_PATH}"
                 """
             }
         }
-        
-        stage('Stop Current Application') {
-            steps {
-                echo '🛑 Stopping current application...'
-                bat """
-                    pm2 stop ${APP_NAME} 2>nul || echo App not running
-                    pm2 delete ${APP_NAME} 2>nul || echo App not in PM2
-                """
-            }
-        }
-        
+
         stage('Start Application') {
             steps {
-                echo '▶️ Starting Next.js application...'
                 bat """
+                    pm2 delete ${APP_NAME} 2>nul
+
                     cd ${DEPLOY_PATH}
-                    pm2 start npm --name ${APP_NAME} -- start
+                    pm2 start npm --name ${APP_NAME} -- run start
                     pm2 save
                     pm2 list
                 """
             }
         }
-        
+
         stage('Health Check') {
             steps {
-                echo '💚 Checking application health...'
                 bat """
-                    timeout /t 5 /nobreak
-                    curl -f http://localhost:${PORT} 2>nul || echo Warning: App may not be responding yet
+                    timeout /t 5
+                    curl http://localhost:${PORT}
                     pm2 info ${APP_NAME}
                 """
             }
         }
     }
-    
+
     post {
         success {
-            echo '✅ =============================================='
-            echo '✅ DEPLOYMENT SUCCESSFUL!'
-            echo '✅ =============================================='
-            echo "📦 Application: ${APP_NAME}"
-            echo "📍 Deployed to: ${DEPLOY_PATH}"
-            echo "🌐 URL: http://localhost:${PORT}"
-            echo "📊 Check logs: pm2 logs ${APP_NAME}"
-            echo '✅ =============================================='
+            echo '✅ DEPLOY SUCCESS'
         }
-        
         failure {
-            echo '❌ =============================================='
-            echo '❌ DEPLOYMENT FAILED!'
-            echo '❌ =============================================='
-            echo 'Check the console output above for errors'
-        }
-        
-        always {
-            echo '🏁 Pipeline execution finished'
+            echo '❌ DEPLOY FAILED'
         }
     }
 }
