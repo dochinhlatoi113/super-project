@@ -103,16 +103,10 @@ pipeline {
                     REM Wait 8 seconds for app to fully start
                     ping -n 9 127.0.0.1 > nul
 
-                    powershell -Command ^
-                      "try { ^
-                        Invoke-WebRequest http://localhost:${PORT} -UseBasicParsing -TimeoutSec 5; ^
-                        Write-Host 'Health check OK' ^
-                      } catch { ^
-                        Write-Error 'Health check FAILED'; ^
-                        exit 1 ^
-                      }"
+                    REM Check if app is running
+                    curl -f http://localhost:${PORT} || (echo Health check FAILED && exit /b 1)
 
-                    echo Application is running on port ${PORT}
+                    echo Health check OK - Application is running on port ${PORT}
                 """
             }
         }
