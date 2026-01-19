@@ -1,25 +1,16 @@
 pipeline {
     agent {
-        label 'window-01-node'  // Chạy trên Windows node
+        label 'window-01-node'
     }
     
-    // Tự động trigger khi push code lên GitHub
     triggers {
-        pollSCM('H/2 * * * *')  // Check GitHub mỗi 2 phút
+        pollSCM('H/2 * * * *')
     }
     
     environment {
-        // Thông tin app
         APP_NAME = 'ecom-nextjs'
-        
-        // ⚠️ THAY ĐỔI đường dẫn deploy trên Windows
-        DEPLOY_PATH = 'D:\\laptrinh\\jenskin-01-agent\\deloy_path\\ecom-nextjs'  // Ví dụ
-        // Hoặc: 'C:\\inetpub\\wwwroot\\ecom-nextjs'
-        
-        // Đường dẫn project trong repo
+        DEPLOY_PATH = 'D:\\laptrinh\\jenskin-01-agent\\deploy_path\\ecom-nextjs'
         PROJECT_DIR = 'project-nextjs/ecom'
-        
-        // Next.js config
         PORT = '3000'
         NODE_ENV = 'production'
     }
@@ -36,15 +27,18 @@ pipeline {
             steps {
                 echo '📥 Pulling code from GitHub...'
                 git branch: 'main',
-                    credentialsId: 'github-credential',  // ⚠️ Thay ID credentials của bạn
+                    credentialsId: 'github-credential',
                     url: 'https://github.com/dochinhlatoi113/super-project.git'
                 
                 script {
                     bat '''
                         echo === Git Info ===
-                        git log -1 --pretty=format:"Commit: %%h" && echo.
-                        git log -1 --pretty=format:"Author: %%an" && echo.
-                        git log -1 --pretty=format:"Message: %%s" && echo.
+                        git log -1 --pretty=format:"Commit: %%h"
+                        echo.
+                        git log -1 --pretty=format:"Author: %%an"
+                        echo.
+                        git log -1 --pretty=format:"Message: %%s"
+                        echo.
                     '''
                 }
             }
@@ -56,8 +50,6 @@ pipeline {
                 bat """
                     cd ${PROJECT_DIR}
                     dir
-                    echo Current directory:
-                    cd
                 """
             }
         }
@@ -66,12 +58,9 @@ pipeline {
             steps {
                 echo '⚙️ Checking Node.js and npm...'
                 bat '''
-                    echo Node version:
                     node --version
-                    echo NPM version:
                     npm --version
-                    echo PM2 version:
-                    pm2 --version || echo PM2 not installed
+                    pm2 --version 2>nul || echo PM2 not installed
                 '''
             }
         }
@@ -81,7 +70,6 @@ pipeline {
                 echo '📦 Installing dependencies...'
                 bat """
                     cd ${PROJECT_DIR}
-                    echo Installing npm packages...
                     npm install
                 """
             }
@@ -93,21 +81,10 @@ pipeline {
                 bat """
                     cd ${PROJECT_DIR}
                     (
-                    echo NODE_ENV=production
-                    echo PORT=${PORT}
-                    echo.
-                    echo # API Configuration
-                    echo # NEXT_PUBLIC_API_URL=https://api.example.com
-                    echo # NEXT_PUBLIC_API_KEY=your-api-key
-                    echo.
-                    echo # Database (nếu Next.js kết nối trực tiếp DB)
-                    echo # DATABASE_URL=postgresql://user:password@localhost:5432/dbname
-                    echo.
-                    echo # Other environment variables
-                    echo # NEXT_PUBLIC_SITE_URL=http://localhost:${PORT}
+                        echo NODE_ENV=production
+                        echo PORT=${PORT}
                     ) > .env.production
                     
-                    echo Environment file created:
                     type .env.production
                 """
             }
@@ -116,16 +93,10 @@ pipeline {
         stage('Run Tests') {
             steps {
                 echo '🧪 Running tests...'
-                script {
-                    try {
-                        bat """
-                            cd ${PROJECT_DIR}
-                            npm test || echo No tests configured
-                        """
-                    } catch (Exception e) {
-                        echo "⚠️ Tests failed: ${e.message}"
-                    }
-                }
+                bat """
+                    cd ${PROJECT_DIR}
+                    npm test 2>nul || echo No tests configured
+                """
             }
         }
         
@@ -134,55 +105,45 @@ pipeline {
                 echo '🔨 Building Next.js application...'
                 bat """
                     cd ${PROJECT_DIR}
-                    echo Building Next.js...
                     npm run build
-                    
-                    echo Build completed, checking .next folder:
                     dir .next
                 """
             }
         }
         
-        stage('Backup Current Version') {
+        stage('Create Deploy Directory') {
             steps {
-                echo '💾 Backing up current deployment...'
-                script {
-                    bat """
-                        if exist "${DEPLOY_PATH}" (
-                            echo Creating backup...
-                            set BACKUP_DIR=${DEPLOY_PATH}.backup.%date:~-4,4%%date:~-10,2%%date:~-7,2%_%time:~0,2%%time:~3,2%%time:~6,2%
-                            set BACKUP_DIR=!BACKUP_DIR: =0!
-                            xcopy /E /I /Y "${DEPLOY_PATH}" "!BACKUP_DIR!"
-                            echo Backup created: !BACKUP_DIR!
-                        ) else (
-                            echo No existing deployment to backup
-                        )
-                    """
-                }
+                echo '📁 Creating deploy directory...'
+                bat """
+                    if not exist "${DEPLOY_PATH}" mkdir "${DEPLOY_PATH}"
+                """
             }
         }
         
-        stage('Deploy to Server') {
+        stage('Deploy Files') {
             steps {
                 echo '🚀 Deploying application...'
                 bat """
-                    echo Creating deploy directory...
-                    if not exist "${DEPLOY_PATH}" mkdir "${DEPLOY_PATH}"
-                    
-                    echo Copying files to ${DEPLOY_PATH}...
                     cd ${PROJECT_DIR}
                     
-                    REM Copy important files and folders
+                    echo Copying .next folder...
                     xcopy /E /I /Y .next "${DEPLOY_PATH}\\.next"
-                    xcopy /E /I /Y public "${DEPLOY_PATH}\\public"
-                    xcopy /E /I /Y node_modules "${DEPLOY_PATH}\\node_modules"
+                    
+                    echo Copying public folder...
+                    if exist public xcopy /E /I /Y public "${DEPLOY_PATH}\\public"
+                    
+                    echo Copying package files...
                     copy /Y package.json "${DEPLOY_PATH}\\package.json"
-                    copy /Y package-lock.json "${DEPLOY_PATH}\\package-lock.json" 2>nul || echo No package-lock.json
-                    copy /Y next.config.js "${DEPLOY_PATH}\\next.config.js" 2>nul || echo No next.config.js
+                    if exist package-lock.json copy /Y package-lock.json "${DEPLOY_PATH}\\package-lock.json"
+                    
+                    echo Copying config files...
+                    if exist next.config.js copy /Y next.config.js "${DEPLOY_PATH}\\next.config.js"
+                    if exist next.config.mjs copy /Y next.config.mjs "${DEPLOY_PATH}\\next.config.mjs"
+                    
+                    echo Copying environment file...
                     copy /Y .env.production "${DEPLOY_PATH}\\.env.production"
                     
-                    echo Deployment completed
-                    dir "${DEPLOY_PATH}"
+                    echo Deployment files copied successfully
                 """
             }
         }
@@ -192,7 +153,7 @@ pipeline {
                 echo '📦 Installing production dependencies...'
                 bat """
                     cd ${DEPLOY_PATH}
-                    npm install --production
+                    npm install --production --no-optional
                 """
             }
         }
@@ -200,16 +161,10 @@ pipeline {
         stage('Stop Current Application') {
             steps {
                 echo '🛑 Stopping current application...'
-                script {
-                    bat """
-                        REM Stop PM2 process if exists
-                        pm2 stop ${APP_NAME} || echo App not running
-                        pm2 delete ${APP_NAME} || echo App not in PM2
-                        
-                        REM Alternative: Kill by port
-                        REM for /f "tokens=5" %%a in ('netstat -aon ^| find ":${PORT}" ^| find "LISTENING"') do taskkill /F /PID %%a || echo No process on port ${PORT}
-                    """
-                }
+                bat """
+                    pm2 stop ${APP_NAME} 2>nul || echo App not running
+                    pm2 delete ${APP_NAME} 2>nul || echo App not in PM2
+                """
             }
         }
         
@@ -218,19 +173,9 @@ pipeline {
                 echo '▶️ Starting Next.js application...'
                 bat """
                     cd ${DEPLOY_PATH}
-                    
-                    REM Check if PM2 is installed
-                    where pm2 >nul 2>nul
-                    if %ERRORLEVEL% EQU 0 (
-                        echo Starting with PM2...
-                        pm2 start npm --name ${APP_NAME} -- start
-                        pm2 save
-                        pm2 list
-                    ) else (
-                        echo PM2 not found! Install it: npm install -g pm2
-                        echo Starting app directly...
-                        start /B npm start
-                    )
+                    pm2 start npm --name ${APP_NAME} -- start
+                    pm2 save
+                    pm2 list
                 """
             }
         }
@@ -238,21 +183,11 @@ pipeline {
         stage('Health Check') {
             steps {
                 echo '💚 Checking application health...'
-                script {
-                    bat """
-                        echo Waiting 10 seconds for app to start...
-                        timeout /t 10 /nobreak
-                        
-                        REM Check if app is responding
-                        curl -f http://localhost:${PORT} || echo Warning: App may not be responding
-                        
-                        REM Show PM2 status
-                        pm2 info ${APP_NAME} || echo PM2 not managing the app
-                        
-                        REM Show processes on port
-                        netstat -ano | findstr ":${PORT}"
-                    """
-                }
+                bat """
+                    timeout /t 5 /nobreak
+                    curl -f http://localhost:${PORT} 2>nul || echo Warning: App may not be responding yet
+                    pm2 info ${APP_NAME}
+                """
             }
         }
     }
@@ -273,31 +208,7 @@ pipeline {
             echo '❌ =============================================='
             echo '❌ DEPLOYMENT FAILED!'
             echo '❌ =============================================='
-            
-            script {
-                bat """
-                    echo Attempting rollback...
-                    
-                    REM Find latest backup
-                    for /f "delims=" %%i in ('dir /b /ad /o-d "${DEPLOY_PATH}.backup.*" 2^>nul') do (
-                        set LATEST_BACKUP=%%i
-                        goto :found
-                    )
-                    :found
-                    
-                    if defined LATEST_BACKUP (
-                        echo Rolling back to !LATEST_BACKUP!
-                        rmdir /S /Q "${DEPLOY_PATH}"
-                        xcopy /E /I /Y "!LATEST_BACKUP!" "${DEPLOY_PATH}"
-                        
-                        cd ${DEPLOY_PATH}
-                        pm2 restart ${APP_NAME} || npm start
-                        echo Rollback completed
-                    ) else (
-                        echo No backup found for rollback
-                    )
-                """
-            }
+            echo 'Check the console output above for errors'
         }
         
         always {
