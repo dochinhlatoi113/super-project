@@ -28,7 +28,6 @@ pipeline {
                 bat """
                     cd /d ${PROJECT_DIR}
                     npm install
-                    npm install pm2 --save-dev
                 """
             }
         }
@@ -80,10 +79,16 @@ pipeline {
 
                     cd /d ${DEPLOY_PATH}
 
-                    npx pm2 delete ${APP_NAME} || echo App not exists
-                    npx pm2 start npm --name ${APP_NAME} -- run start
-                    npx pm2 save
-                    npx pm2 list
+                    REM Kill existing process on port ${PORT}
+                    for /f "tokens=5" %%a in ('netstat -aon ^| find ":${PORT}" ^| find "LISTENING"') do (
+                        taskkill /f /pid %%a 2>nul || echo No process found on port ${PORT}
+                    )
+
+                    REM Start application in background
+                    start /B npm run start
+                    timeout /t 5
+
+                    echo Application started on port ${PORT}
                 """
             }
         }
