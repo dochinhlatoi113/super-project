@@ -55,8 +55,10 @@ pipeline {
                     if exist "${DEPLOY_PATH}" rmdir /S /Q "${DEPLOY_PATH}"
                     mkdir "${DEPLOY_PATH}"
 
-                    robocopy project-nextjs\ecom "D:\laptrinh\jenskin-01-agent\deploy_path\ecom-nextjs" /E /MIR
+                    bat '''
+                    robocopy project-nextjs/ecom "D:/laptrinh/jenskin-01-agent/deploy_path/ecom-nextjs" /E /MIR
                     exit 0
+                    '''
                 """
             }
         }
