@@ -4,7 +4,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
-import {  fetchProducts } from '@/lib/api';
+import {  fetchProducts, Product } from '@/lib/api';
 
 
 export default function FeaturedProducts() {
