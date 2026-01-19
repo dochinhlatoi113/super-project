@@ -108,7 +108,7 @@ pipeline {
                         exit 1 ^
                       }"
 
-                    npx pm2 info ${APP_NAME}
+                    echo Application is running on port ${PORT}
                 """
             }
         }
