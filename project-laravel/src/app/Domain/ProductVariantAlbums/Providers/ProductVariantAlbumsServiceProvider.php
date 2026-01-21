@@ -1,5 +1,10 @@
 <?php
-namespace App\Domain\ProductVariantAlbums\Providers;
+/**
+ * Class ProductVariantAlbumsServiceProvider
+ *
+ * Service provider for registering services and bindings
+ * Handles dependency injection and service registration
+ */namespace App\Domain\ProductVariantAlbums\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Domain\ProductVariantAlbums\Repositories\ProductVariantAlbumsRepositoryInterface;
 use App\Domain\ProductVariantAlbums\Repositories\ProductVariantAlbumsRepository;

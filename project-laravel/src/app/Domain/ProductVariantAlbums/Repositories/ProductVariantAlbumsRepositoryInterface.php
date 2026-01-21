@@ -1,5 +1,10 @@
 <?php
-namespace App\Domain\ProductVariantAlbums\Repositories;
+/**
+ * Interface ProductVariantAlbumsRepositoryInterface
+ *
+ * Repository interface for data access operations
+ * Defines contract for data layer implementations
+ */namespace App\Domain\ProductVariantAlbums\Repositories;
 use App\Domain\ProductVariantAlbums\Entities\ProductVariantAlbums;
 
 interface ProductVariantAlbumsRepositoryInterface

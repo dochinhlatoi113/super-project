@@ -1,5 +1,10 @@
 <?php
-namespace App\Domain\Payment\Entities;
+/**
+ * Class Payment
+ *
+ * Domain entity representing business object
+ * Contains business logic and data validation
+ */namespace App\Domain\Payment\Entities;
 use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model

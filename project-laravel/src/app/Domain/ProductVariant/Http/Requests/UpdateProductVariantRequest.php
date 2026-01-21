@@ -1,5 +1,10 @@
 <?php
-namespace App\Domain\ProductVariant\Http\Requests;
+/**
+ * Class UpdateProductVariantRequest
+ *
+ * Request validation class
+ * Handles input validation and authorization
+ */namespace App\Domain\ProductVariant\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProductVariantRequest extends FormRequest

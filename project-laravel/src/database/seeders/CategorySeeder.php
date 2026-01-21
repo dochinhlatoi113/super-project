@@ -13,34 +13,30 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-           $electronics = Category::create([
-            'name' => 'Electronics',
-            'order' => 1,
-            'active' => true,
-            'has_promotion' => true,
-        ]);
+        // Seed categories 
+        $categories = [
+            'TVs, Speakers, Karaoke Systems, Cameras',
+            'Refrigerators, Freezers, Dishwashers',
+            'Washing Machines, Dryers, Water Heaters',
+            'Air Conditioners, Fans, Air Purifiers',
+            'Home Appliances, Vacuum Cleaners, Air Fryers',
+            'Kitchenware, Electric Stoves, Rice Cookers',
+            'Water Filters, Blenders, Juicers',
+            'Health, Beauty, Baby Products',
+            'Phones, Tablets, Accessories',
+            'Laptops, PCs, Office Equipment',
+            'Services & Support',
+            'Useful Information',
+            'Business Sales',
+        ];
 
-        $phones = Category::create([
-            'name' => 'Smart Phones',
-            'parent_id' => $electronics->id,
-            'order' => 1,
-            'active' => true,
-            'has_promotion' => false,
-        ]);
-
-        $laptops = Category::create([
-            'name' => 'Laptops',
-            'parent_id' => $electronics->id,
-            'order' => 2,
-            'active' => true,
-            'has_promotion' => true,
-        ]);
-
-        $fashion = Category::create([
-            'name' => 'Fashion',
-            'order' => 2,
-            'active' => true,
-            'has_promotion' => false,
-        ]);
+        foreach ($categories as $i => $name) {
+            Category::create([
+                'name' => $name,
+                'order' => $i + 1,
+                'active' => true,
+                'has_promotion' => false,
+            ]);
+        }
     }
 }

@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Interface BrandRepository
+ *
+ * Repository interface for data access operations
+ * Defines contract for data layer implementations
+ */
 namespace App\Domain\Brand\Repositories;
 
 use App\Domain\Brand\Entities\Brand;

@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Class ClearProductCacheCommand
+ *
+ * Console command for CLI operations
+ * Provides command-line interface functionality
+ */
 namespace App\Domain\Product\Console\Commands;
 
 use Illuminate\Console\Command;

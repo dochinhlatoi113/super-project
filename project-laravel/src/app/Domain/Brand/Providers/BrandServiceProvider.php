@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Class BrandServiceProvider
+ *
+ * Service provider for registering services and bindings
+ * Handles dependency injection and service registration
+ */
 namespace App\Domain\Brand\Providers;
 
 use Illuminate\Support\ServiceProvider;

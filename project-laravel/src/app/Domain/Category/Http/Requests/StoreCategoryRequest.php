@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Class StoreCategoryRequest
+ *
+ * Request validation class
+ * Handles input validation and authorization
+ */
 namespace App\Domain\Category\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;

@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Class CategoryObserver
+ *
+ * Model observer for handling model events
+ * Automatically triggers actions on model lifecycle events
+ */
 namespace App\Domain\Category\Observers;
 
 use App\Domain\Category\Entities\Category;

@@ -1,5 +1,10 @@
 <?php
-namespace App\Domain\ProductVariant\Repositories;
+/**
+ * Interface ProductVariantRepositoryInterface
+ *
+ * Repository interface for data access operations
+ * Defines contract for data layer implementations
+ */namespace App\Domain\ProductVariant\Repositories;
 use App\Domain\ProductVariant\Entities\ProductVariant;
 
 interface ProductVariantRepositoryInterface

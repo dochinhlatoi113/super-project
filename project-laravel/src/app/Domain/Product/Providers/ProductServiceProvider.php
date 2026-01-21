@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Class ProductServiceProvider
+ *
+ * Service provider for registering services and bindings
+ * Handles dependency injection and service registration
+ */
 namespace App\Domain\Product\Providers;
 
 use Illuminate\Support\ServiceProvider;

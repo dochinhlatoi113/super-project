@@ -1,5 +1,10 @@
 <?php
-namespace App\Domain\Payment\Http\Requests;
+/**
+ * Class StorePaymentRequest
+ *
+ * Request validation class
+ * Handles input validation and authorization
+ */namespace App\Domain\Payment\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePaymentRequest extends FormRequest

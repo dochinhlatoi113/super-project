@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Interface CategoryRepositoryInterface
+ *
+ * Repository interface for data access operations
+ * Defines contract for data layer implementations
+ */
 namespace App\Domain\Category\Repositories;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;

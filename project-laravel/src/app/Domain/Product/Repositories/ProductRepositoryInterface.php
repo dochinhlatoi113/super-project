@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Interface ProductRepositoryInterface
+ *
+ * Repository interface for data access operations
+ * Defines contract for data layer implementations
+ */
 namespace App\Domain\Product\Repositories;
 
 use App\Domain\Product\Entities\Product;

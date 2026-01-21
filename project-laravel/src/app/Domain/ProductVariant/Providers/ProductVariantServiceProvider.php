@@ -1,5 +1,10 @@
 <?php
-namespace App\Domain\ProductVariant\Providers;
+/**
+ * Class ProductVariantServiceProvider
+ *
+ * Service provider for registering services and bindings
+ * Handles dependency injection and service registration
+ */namespace App\Domain\ProductVariant\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Domain\ProductVariant\Repositories\ProductVariantRepositoryInterface;
 use App\Domain\ProductVariant\Repositories\ProductVariantRepository;

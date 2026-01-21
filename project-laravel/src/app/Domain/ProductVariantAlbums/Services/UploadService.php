@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Class UploadService
+ *
+ * Service layer for handling business logic
+ * Provides CRUD operations and business rules
+ */
 namespace App\Domain\ProductVariantAlbums\Services;
 
 use Cloudinary\Configuration\Configuration;

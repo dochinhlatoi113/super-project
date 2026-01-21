@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Class ProductVariantAlbums
+ *
+ * Domain entity representing business object
+ * Contains business logic and data validation
+ */
 namespace App\Domain\ProductVariantAlbums\Entities;
 
 use Illuminate\Database\Eloquent\Model;

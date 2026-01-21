@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Class ProductCacheService
+ *
+ * Service layer for handling business logic
+ * Provides CRUD operations and business rules
+ */
 namespace App\Domain\Product\Services;
 
 use Illuminate\Support\Facades\Redis;
@@ -11,7 +16,11 @@ class ProductCacheService
     protected string $key = 'products:list';
     protected ProductRepositoryInterface $repo;
 
-    public function __construct(
+    /**
+     * ProductCacheService constructor.
+     *
+     * @param mixed $repo Repository instance for data operations
+     */    public function __construct(
         ProductRepositoryInterface $repo
     ) {
         $this->repo = $repo;

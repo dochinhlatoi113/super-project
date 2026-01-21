@@ -1,5 +1,10 @@
 <?php
-namespace App\Domain\Payment\Http\Controllers;
+/**
+ * Class PaymentController
+ *
+ * Controller for handling API endpoints
+ * Provides REST API operations
+ */namespace App\Domain\Payment\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Domain\Payment\Services\PaymentService;
 use App\Domain\Payment\Http\Requests\StorePaymentRequest;
@@ -11,27 +16,51 @@ class PaymentController extends Controller
 {
     protected $service;
 
-    public function __construct(PaymentService $service)
+    /**
+     * PaymentController constructor.
+     *
+     * @param mixed $service Service instance for business logic
+     */    public function __construct(PaymentService $service)
     {
         $this->service = $service;
     }
 
-    // public function index()
+    /**
+     * Get paginated list of items
+     *
+     * @return \Illuminate\Http\JsonResponse Response containing paginated data
+     */    // public function index()
     // {
     //     return response()->json($this->service->list());
     // }
 
-    // public function store(StorePaymentRequest $request)
+    /**
+     * Create a new item
+     *
+     * @param mixed $request Request object containing validated data
+     * @return \Illuminate\Http\JsonResponse Response containing created item
+     */    // public function store(StorePaymentRequest $request)
     // {
     //     return response()->json($this->service->create($request->validated()), 201);
     // }
 
-    // public function update(UpdatePaymentRequest $request, $id)
+    /**
+     * Update an existing item
+     *
+     * @param mixed $request Request object containing validated data
+     * @param string $id Item identifier
+     * @return \Illuminate\Http\JsonResponse Response containing updated item
+     */    // public function update(UpdatePaymentRequest $request, $id)
     // {
     //     return response()->json($this->service->update($id, $request->validated()));
     // }
 
-    // public function destroy($id)
+    /**
+     * Delete an item by identifier
+     *
+     * @param string $id Item identifier
+     * @return \Illuminate\Http\JsonResponse Response indicating deletion result
+     */    // public function destroy($id)
     // {
     //     $this->service->delete($id);
     //     return response()->json(['message' => 'Deleted successfully']);

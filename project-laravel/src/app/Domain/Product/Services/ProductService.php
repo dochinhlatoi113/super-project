@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Class ProductService
+ *
+ * Service layer for handling business logic
+ * Provides CRUD operations and business rules
+ */
 namespace App\Domain\Product\Services;
 
 use App\Domain\Product\Repositories\ProductRepositoryInterface;
@@ -21,7 +26,11 @@ class ProductService
     protected ProductCacheInterface $cache;
     protected ProductEventProducer $eventProducer;
 
-    public function __construct(
+    /**
+     * ProductService constructor.
+     *
+     * @param mixed $repo Repository instance for data operations
+     */    public function __construct(
         ProductRepositoryInterface $repo,
         ProductVariantService $variantService,
         ProductVariantAlbumsService $albumService,
@@ -37,7 +46,12 @@ class ProductService
         $this->eventProducer = $eventProducer;
     }
 
-    public function list(int $perPage = 15)
+    /**
+     * Get paginated list of items
+     *
+     * @param int $perPage Number of items per page
+     * @return mixed Paginated list of items
+     */    public function list(int $perPage = 15)
     {
         $page = request()->get('page', 1);
         $cachedProducts = $this->cache->getPage($page, $perPage);
@@ -52,7 +66,12 @@ class ProductService
         return $products;
     }
 
-    public function findBySlug(string $slug)
+    /**
+     * Find item by slug
+     *
+     * @param string $slug Item slug
+     * @return mixed|null Item object or null if not found
+     */    public function findBySlug(string $slug)
     {
         $product = $this->repo->findBySlug($slug);
 
@@ -69,7 +88,12 @@ class ProductService
         return $product;
     }
 
-    public function create(array $data)
+    /**
+     * Create a new item
+     *
+     * @param array $data Item data to create
+     * @return mixed Created item object
+     */    public function create(array $data)
     {
         $data['logo'] = $data['logo'] ?? 'images/no-image.png';
 
@@ -206,7 +230,13 @@ class ProductService
         return $result;
     }
 
-    public function update(string $slug, array $data)
+    /**
+     * Update an existing item
+     *
+     * @param string $slug Item slug
+     * @param array $data Data to update
+     * @return mixed Updated item object
+     */    public function update(string $slug, array $data)
     {
         // DB transaction - rollback if product/variant/album fails
         $result = DB::transaction(function () use ($slug, $data) {
@@ -344,7 +374,12 @@ class ProductService
         return $result;
     }
 
-    public function delete(string $slug): bool
+    /**
+     * Delete an item by slug
+     *
+     * @param string $slug Item slug
+     * @return bool True if successful, false otherwise
+     */    public function delete(string $slug): bool
     {
         // Get product data before deletion for Kafka event
         $product = $this->repo->findBySlug($slug);

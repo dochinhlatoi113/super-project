@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Class BrandObserver
+ *
+ * Model observer for handling model events
+ * Automatically triggers actions on model lifecycle events
+ */
 namespace App\Domain\Brand\Observers;
 
 use App\Domain\Brand\Entities\Brand;

@@ -1,5 +1,10 @@
 <?php
-namespace App\Domain\Payment\Services;
+/**
+ * Class PaymentService
+ *
+ * Service layer for handling business logic
+ * Provides CRUD operations and business rules
+ */namespace App\Domain\Payment\Services;
 use App\Domain\Payment\Repositories\PaymentRepositoryInterface;
 use App\Domain\Payment\Entities\Payment;
 
@@ -7,7 +12,11 @@ class PaymentService
 {
     protected $repo;
 
-    public function __construct(PaymentRepositoryInterface $repo)
+    /**
+     * PaymentService constructor.
+     *
+     * @param mixed $repo Repository instance for data operations
+     */    public function __construct(PaymentRepositoryInterface $repo)
     {
         $this->repo = $repo;
     }

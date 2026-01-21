@@ -1,5 +1,10 @@
 <?php
-namespace App\Domain\ProductVariantAlbums\Http\Requests;
+/**
+ * Class UpdateProductVariantAlbumsRequest
+ *
+ * Request validation class
+ * Handles input validation and authorization
+ */namespace App\Domain\ProductVariantAlbums\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProductVariantAlbumsRequest extends FormRequest

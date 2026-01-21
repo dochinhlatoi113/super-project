@@ -1,5 +1,10 @@
 <?php
-namespace App\Domain\Payment\Repositories;
+/**
+ * Interface PaymentRepository
+ *
+ * Repository interface for data access operations
+ * Defines contract for data layer implementations
+ */namespace App\Domain\Payment\Repositories;
 use App\Domain\Payment\Entities\Payment;
 
 class PaymentRepository implements PaymentRepositoryInterface

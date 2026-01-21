@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Class UpdateBrandRequest
+ *
+ * Request validation class
+ * Handles input validation and authorization
+ */
 namespace App\Domain\Brand\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;

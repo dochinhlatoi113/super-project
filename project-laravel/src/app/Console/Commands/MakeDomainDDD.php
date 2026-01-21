@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Class MakeDomainDDD
+ *
+ * Console command for CLI operations
+ * Provides command-line interface functionality
+ */
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;

@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Class ConsumeProductCache
+ *
+ * Console command for CLI operations
+ * Provides command-line interface functionality
+ */
 namespace App\Domain\Product\Console\Commands;
 
 use App\Domain\Product\Services\Kafka\ProductCacheConsumer;

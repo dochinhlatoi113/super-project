@@ -1,5 +1,10 @@
 <?php
-namespace App\Domain\ProductVariant\Http\Controllers;
+/**
+ * Class ProductVariantController
+ *
+ * Controller for handling API endpoints
+ * Provides REST API operations
+ */namespace App\Domain\ProductVariant\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Domain\ProductVariant\Services\ProductVariantService;
 use App\Domain\ProductVariant\Http\Requests\StoreProductVariantRequest;
@@ -9,18 +14,31 @@ class ProductVariantController extends Controller
 {
     protected $service;
 
-    public function __construct(ProductVariantService $service)
+    /**
+     * ProductVariantController constructor.
+     *
+     * @param mixed $service Service instance for business logic
+     */    public function __construct(ProductVariantService $service)
     {
         $this->service = $service;
     }
 
-    public function index()
+    /**
+     * Get paginated list of items
+     *
+     * @return \Illuminate\Http\JsonResponse Response containing paginated data
+     */    public function index()
     {
         return response()->json($this->service->list());
     }
 
 
-    public function store(StoreProductVariantRequest $request)
+    /**
+     * Create a new item
+     *
+     * @param mixed $request Request object containing validated data
+     * @return \Illuminate\Http\JsonResponse Response containing created item
+     */    public function store(StoreProductVariantRequest $request)
     {
         $data = $request->validated();
         $attributes = $data['attributes'] ?? [];
@@ -33,7 +51,13 @@ class ProductVariantController extends Controller
         return response()->json($variant, 201);
     }
 
-    public function update(UpdateProductVariantRequest $request, $id)
+    /**
+     * Update an existing item
+     *
+     * @param mixed $request Request object containing validated data
+     * @param string $id Item identifier
+     * @return \Illuminate\Http\JsonResponse Response containing updated item
+     */    public function update(UpdateProductVariantRequest $request, $id)
     {
         $data = $request->validated();
         $attributes = $data['attributes'] ?? [];
@@ -46,7 +70,12 @@ class ProductVariantController extends Controller
         return response()->json($variant);
     }
 
-    public function destroy($id)
+    /**
+     * Delete an item by identifier
+     *
+     * @param string $id Item identifier
+     * @return \Illuminate\Http\JsonResponse Response indicating deletion result
+     */    public function destroy($id)
     {
         // Xóa luôn các thuộc tính động EAV khi xóa variant
         $attrRepo = app(\App\Domain\ProductVariant\Repositories\ProductVariantAttributeRepository::class);

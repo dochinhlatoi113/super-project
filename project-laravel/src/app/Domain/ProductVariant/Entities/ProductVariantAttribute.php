@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Class ProductVariantAttribute
+ *
+ * Domain entity representing business object
+ * Contains business logic and data validation
+ */
 namespace App\Domain\ProductVariant\Entities;
 
 use Illuminate\Database\Eloquent\Model;

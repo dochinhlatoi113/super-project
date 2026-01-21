@@ -1,5 +1,10 @@
 <?php
-namespace App\Domain\Payment\Providers;
+/**
+ * Class PaymentServiceProvider
+ *
+ * Service provider for registering services and bindings
+ * Handles dependency injection and service registration
+ */namespace App\Domain\Payment\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Domain\Payment\Repositories\PaymentRepositoryInterface;
 use App\Domain\Payment\Repositories\PaymentRepository;

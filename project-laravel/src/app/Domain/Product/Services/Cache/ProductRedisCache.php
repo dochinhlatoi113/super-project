@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Class ProductRedisCache
+ *
+ * Cache implementation for data storage and retrieval
+ * Provides caching layer for improved performance
+ */
 namespace App\Domain\Product\Services\Cache;
 
 use App\Domain\Product\Contracts\ProductCacheInterface;

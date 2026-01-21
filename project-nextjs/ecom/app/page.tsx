@@ -20,7 +20,7 @@ export default function Home() {
       </div>
       <div className="flex w-full max-w-7xl mx-auto px-2">
         <div className="flex-1 flex flex-col gap-4">
-          <CategoryList />
+          <img src="/banner-tet.avif" alt="banner-tet" className="w-full h-32 rounded-lg shadow" />
           <FeaturedProducts />
           <PromoBanner />
           <NewsSection />

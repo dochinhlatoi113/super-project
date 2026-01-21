@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Interface CategoryRepository
+ *
+ * Repository interface for data access operations
+ * Defines contract for data layer implementations
+ */
 namespace App\Domain\Category\Repositories;
 
 use App\Domain\Category\Entities\Category;
