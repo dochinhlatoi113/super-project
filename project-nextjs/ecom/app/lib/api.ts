@@ -8,6 +8,8 @@ export interface Category {
   name: string;
   slug: string;
   active: number;
+  parent_id?: number | null;
+  sub_categories?: Category[];
 }
 
 export interface Product {
@@ -51,6 +53,17 @@ export const fetchProducts = async (): Promise<Product[]> => {
 
 export const fetchProductDetail = async (slug: string): Promise<Product | null> => {
   const response = await fetch(`${API_BASE_URL}/products/detail/${encodeURIComponent(slug)}`);
+  if (!response.ok) {
+    return null;
+  }
+  const data = await response.json();
+  return data.data || null;
+};
+
+// Fetch detail for a category by slug
+export const fetchCategoryDetail = async (slug: string): Promise<Category | null> => {
+  console.log('Calling API:', `${API_BASE_URL}/categories/detail/${encodeURIComponent(slug)}`);
+  const response = await fetch(`${API_BASE_URL}/categories/detail/${encodeURIComponent(slug)}`, { cache: 'no-store' });
   if (!response.ok) {
     return null;
   }

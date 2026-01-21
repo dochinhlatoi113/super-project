@@ -3,9 +3,9 @@
 // CategoryList.tsx
 // Component danh mục sản phẩm, icon + tên, hiển thị hàng ngang, tailwind, dễ mở rộng
 
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { fetchCategories, Category } from '@/lib/api';
+import { fetchCategories, fetchCategoryDetail, Category } from '@/lib/api';
 
 const defaultIcon = '📁'; // Default icon if not provided
 
@@ -45,16 +45,34 @@ export default function CategoryList() {
     return categoryIcon[index]?.icon || defaultIcon;
   };
 
+  const router = useRouter();
+
+  const handleClick = async (slug: string) => {
+    // call category detail API, then navigate
+    try {
+      const detail = await fetchCategoryDetail(slug);
+      console.log('Category detail:', detail);
+    } catch (err) {
+      console.error('Failed fetching category detail', err);
+    }
+    router.push(`/categories/${slug}`);
+  };
+
   return (
     <section className="w-full bg-white py-4 shadow-sm">
       <div className="max-w-7xl mx-auto flex gap-4 px-2 overflow-x-auto">
         {Array.isArray(categories) && categories.filter((cat: Category) => cat.active === 1).map((cat: Category, index: number) => (
-          <Link key={cat.id} href={`/categories/${cat.slug}`}>
-            <div className="flex flex-col items-center min-w-[80px] cursor-pointer hover:text-red-600 transition">
-              <span className="text-3xl mb-1">{getIcon(index)}</span>
-              <span className="text-xs font-medium text-gray-700 whitespace-nowrap">{cat.name}</span>
-            </div>
-          </Link>
+          <div
+            key={cat.id}
+            onClick={() => handleClick(cat.slug)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter') handleClick(cat.slug); }}
+            className="flex flex-col items-center min-w-[80px] cursor-pointer hover:text-red-600 transition"
+          >
+            <span className="text-3xl mb-1">{getIcon(index)}</span>
+            <span className="text-xs font-medium text-gray-700 whitespace-nowrap">{cat.name}</span>
+          </div>
         ))}
       </div>
     </section>

@@ -30,7 +30,18 @@ class Category extends Model
     {
         return $this->belongsToMany(\App\Domain\Product\Entities\Product::class, 'product_category')
             ->withPivot(['is_primary', 'is_active'])
+            ->with('variants.primarySku')
             ->withTimestamps();
+    }
+
+    public function parentCategory()
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+    public function subCategories()
+    {
+        return $this->hasMany(Category::class, 'parent_id');
     }
 
     /**

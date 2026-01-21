@@ -9,12 +9,26 @@ namespace App\Domain\Category\Repositories;
 
 use App\Domain\Category\Entities\Category;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class CategoryRepository implements CategoryRepositoryInterface
 {
-    public function paginate(int $perPage = 15): LengthAwarePaginator
+    /**
+     * Paginate categories with parent and sub-categories relationship.
+     * If $parentId is null, return top-level categories with their children.
+     * If $parentId is provided, return all categories with that parent_id (siblings).
+     */
+    public function paginate(int $perPage = 15, $parentId = null): LengthAwarePaginator
     {
-         return Category::orderBy('order')->paginate($perPage);
+        $query = Category::with(['subCategories'])->orderBy('order');
+        
+        if (is_null($parentId)) {
+            $query->whereNull('parent_id');
+        } else {
+            $query->where('parent_id', $parentId);
+        }
+        
+        return $query->paginate($perPage);
     }
 
     public function find(int $id): ?Category
@@ -24,7 +38,7 @@ class CategoryRepository implements CategoryRepositoryInterface
 
     public function findBySlug(string $slug): ?Category
     {
-        return Category::where('slug', $slug)->first();
+        return Category::with(['products'])->where('slug', $slug)->first();
     }
 
     public function create(array $data): Category

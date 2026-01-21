@@ -20,133 +20,134 @@ class ProductSeeder extends Seeder
         $faker = Faker::create();
         $skuService = App::make(ProductSkuService::class);
         $brands = Brand::pluck('id')->toArray();
-        $categories = Category::pluck('id')->toArray();
         $attributeRepo = new ProductVariantAttributeRepository();
 
-        for ($i = 0; $i < 109581; $i++) {  // Giảm số lượng để test
-            $productName = $faker->words(2, true);
-            $product = Product::create([
-                'name' => $productName,
-                'slug' => Str::slug($productName) . '-' . Str::random(6),
-                'brand_id' => $faker->randomElement($brands),
-                'is_active' => $faker->boolean(90),
-            ]);
+        // Lấy tất cả category con (có parent_id != null)
+        $subCategories = Category::whereNotNull('parent_id')->get();
 
-            // Attach categories
-            $categoryIds = $faker->randomElements($categories, rand(1, 3));
-            foreach ($categoryIds as $index => $categoryId) {
-                $product->categories()->attach($categoryId, [
-                    'is_primary' => $index === 0 ? 1 : 0,  // First category is primary
+        foreach ($subCategories as $subCategory) {
+            for ($i = 0; $i < 100; $i++) {
+                $productName = $faker->words(2, true);
+                $product = Product::create([
+                    'name' => $productName,
+                    'slug' => Str::slug($productName) . '-' . Str::random(6),
+                    'brand_id' => $faker->randomElement($brands),
+                    'is_active' => $faker->boolean(90),
+                ]);
+
+                // Gán đúng 1 category con
+                $product->categories()->attach($subCategory->id, [
+                    'is_primary' => 1,
                     'is_active' => 1,
                 ]);
-            }
 
-            $variantCount = rand(1, 3);
-            for ($j = 1; $j <= $variantCount; $j++) {
-                $variantName = $productName . " Variant {$j}";
+                $variantCount = rand(1, 3);
+                for ($j = 1; $j <= $variantCount; $j++) {
+                    $variantName = $productName . " Variant {$j}";
 
-                $eavAttributes = [
-                    [
-                        'attribute' => 'color',
-                        'value' => $faker->safeColorName(),
-                        'is_filterable' => true,
-                    ],
-                    [
-                        'attribute' => 'size',
-                        'value' => $faker->randomElement(['S', 'M', 'L', 'XL']),
-                        'is_filterable' => true,
-                    ],
-                    [
-                        'attribute' => 'storage',
-                        'value' => $faker->randomElement([64, 128, 256, 512]),
-                        'is_filterable' => true,
-                    ],
-                    [
-                        'attribute' => 'price',
-                        'value' => $faker->numberBetween(10000, 400000000),
-                        'is_filterable' => false,
-                    ],
-                ];
-                $variant = ProductVariant::create([
-                    'product_id' => $product->id,
-                    'name' => $variantName,
-                    'slug' => Str::slug($variantName) . '-' . Str::random(6),
-                    'stock' => $faker->numberBetween(0, 100),
-                    'price' => $faker->numberBetween(10000, 400000000),
-                    'is_active' => true,
-                    'description' => $faker->sentence(10),
-                ]);
-                $attributeRepo->createMany($variant->id, $eavAttributes);
-
-                // Create 2 SKUs and 2 barcodes for this variant
-                try {
-                    // Create first SKU (primary)
-                    $skuData1 = [
-                        'product_variant_id' => $variant->id,
-                        'is_primary' => true,
-                        'type' => 'sku'
+                    $eavAttributes = [
+                        [
+                            'attribute' => 'color',
+                            'value' => $faker->safeColorName(),
+                            'is_filterable' => true,
+                        ],
+                        [
+                            'attribute' => 'size',
+                            'value' => $faker->randomElement(['S', 'M', 'L', 'XL']),
+                            'is_filterable' => true,
+                        ],
+                        [
+                            'attribute' => 'storage',
+                            'value' => $faker->randomElement([64, 128, 256, 512]),
+                            'is_filterable' => true,
+                        ],
+                        [
+                            'attribute' => 'price',
+                            'value' => $faker->numberBetween(10000, 400000000),
+                            'is_filterable' => false,
+                        ],
                     ];
-                    $sku1 = $skuService->create($skuData1);
-                    echo "Created SKU 1: {$sku1->sku}\n";
+                    $variant = ProductVariant::create([
+                        'product_id' => $product->id,
+                        'name' => $variantName,
+                        'slug' => Str::slug($variantName) . '-' . Str::random(6),
+                        'stock' => $faker->numberBetween(0, 100),
+                        'price' => $faker->numberBetween(10000, 400000000),
+                        'is_active' => true,
+                        'description' => $faker->sentence(10),
+                    ]);
+                    $attributeRepo->createMany($variant->id, $eavAttributes);
 
-                    // Create second SKU (non-primary)
-                    $skuData2 = [
-                        'product_variant_id' => $variant->id,
-                        'is_primary' => false,
-                        'type' => 'sku'
-                    ];
-                    $sku2 = $skuService->create($skuData2);
-                    echo "Created SKU 2: {$sku2->sku}\n";
+                    // Create 2 SKUs and 2 barcodes for this variant
+                    try {
+                        // Create first SKU (primary)
+                        $skuData1 = [
+                            'product_variant_id' => $variant->id,
+                            'is_primary' => true,
+                            'type' => 'sku'
+                        ];
+                        $sku1 = $skuService->create($skuData1);
+                        echo "Created SKU 1: {$sku1->sku}\n";
 
-                    // Create first barcode (EAN)
-                    $barcodeData1 = [
-                        'product_variant_id' => $variant->id,
-                        'is_primary' => false,
-                        'type' => 'ean'
-                    ];
-                    $barcode1 = $skuService->create($barcodeData1);
-                    echo "Created Barcode 1: {$barcode1->barcode}\n";
+                        // Create second SKU (non-primary)
+                        $skuData2 = [
+                            'product_variant_id' => $variant->id,
+                            'is_primary' => false,
+                            'type' => 'sku'
+                        ];
+                        $sku2 = $skuService->create($skuData2);
+                        echo "Created SKU 2: {$sku2->sku}\n";
 
-                    // Create second barcode (EAN)
-                    $barcodeData2 = [
-                        'product_variant_id' => $variant->id,
-                        'is_primary' => false,
-                        'type' => 'ean'
+                        // Create first barcode (EAN)
+                        $barcodeData1 = [
+                            'product_variant_id' => $variant->id,
+                            'is_primary' => false,
+                            'type' => 'ean'
+                        ];
+                        $barcode1 = $skuService->create($barcodeData1);
+                        echo "Created Barcode 1: {$barcode1->barcode}\n";
+
+                        // Create second barcode (EAN)
+                        $barcodeData2 = [
+                            'product_variant_id' => $variant->id,
+                            'is_primary' => false,
+                            'type' => 'ean'
+                        ];
+                        $barcode2 = $skuService->create($barcodeData2);
+                        echo "Created Barcode 2: {$barcode2->barcode}\n";
+                    } catch (\Exception $e) {
+                        // Log error but continue
+                        $this->command->error("Failed to create SKUs for variant {$variant->id}: " . $e->getMessage());
+                    }
+
+                    // EAV attributes for this variant (hybrid model)
+                    $eavAttributes = [
+                        [
+                            'attribute' => 'color',
+                            'value' => $faker->safeColorName(),
+                            'is_filterable' => true,
+                        ],
+                        [
+                            'attribute' => 'size',
+                            'value' => $faker->randomElement(['S', 'M', 'L', 'XL']),
+                            'is_filterable' => true,
+                        ],
+                        [
+                            'attribute' => 'storage',
+                            'value' => $faker->randomElement([64, 128, 256, 512]),
+                            'is_filterable' => true,
+                        ],
+                        [
+                            'attribute' => 'price',
+                            'value' => $faker->numberBetween(10000, 400000000),
+                            'is_filterable' => false,
+                        ],
                     ];
-                    $barcode2 = $skuService->create($barcodeData2);
-                    echo "Created Barcode 2: {$barcode2->barcode}\n";
-                } catch (\Exception $e) {
-                    // Log error but continue
-                    $this->command->error("Failed to create SKUs for variant {$variant->id}: " . $e->getMessage());
+                    $attributeRepo->createMany($variant->id, $eavAttributes);
                 }
-
-                // EAV attributes for this variant (hybrid model)
-                $eavAttributes = [
-                    [
-                        'attribute' => 'color',
-                        'value' => $faker->safeColorName(),
-                        'is_filterable' => true,
-                    ],
-                    [
-                        'attribute' => 'size',
-                        'value' => $faker->randomElement(['S', 'M', 'L', 'XL']),
-                        'is_filterable' => true,
-                    ],
-                    [
-                        'attribute' => 'storage',
-                        'value' => $faker->randomElement([64, 128, 256, 512]),
-                        'is_filterable' => true,
-                    ],
-                    [
-                        'attribute' => 'price',
-                        'value' => $faker->numberBetween(10000, 400000000),
-                        'is_filterable' => false,
-                    ],
-                ];
-                $attributeRepo->createMany($variant->id, $eavAttributes);
             }
         }
 
-        $this->command->info("✅ Created products with variants, 2 SKUs and 2 barcodes each");
+        $this->command->info("✅ Created 100 products for each sub-category, with variants, 2 SKUs and 2 barcodes each");
     }
 }
